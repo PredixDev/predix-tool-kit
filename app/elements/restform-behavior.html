@@ -1,0 +1,142 @@
+<script>
+  RestFormBehavior = {
+    properties: {
+      baseUrl: {
+        type: String,
+        notify: true
+      },
+      adminAuthBearerToken: {
+        type: String,
+        notify: true,
+        value: 'First login as Admin.'
+      },
+      error: {
+        type: String,
+        notify: true
+      },
+      success: {
+        type: Boolean,
+        value: false,
+        notify: true
+      },
+      restRequest: {
+        type: String,
+        notify: true
+      },
+      restResponse: {
+        type: String,
+        notify: true
+      },
+      responseCodeText: {
+        type: String
+      },
+      loading: {
+        type: Boolean,
+        value: false,
+        notify: true
+      }
+    },
+
+    listeners: {
+      'iron-form-error': '_handleError',
+      'iron-form-response': '_handleResponse'
+    },
+
+    _overlayButtonListener: function(e, restForm) {
+
+      if (restForm && restForm.validate && !restForm.validate()) {
+        // we'll call submit on the iron-form, just to show the error messages.
+        restForm.submit();
+        return;
+      }
+
+      e.preventDefault();
+      var id = e.target.getAttribute('data-dialog');
+      // TODO: Clean this up!  Ugly hack, walking up the DOM tree.
+      var parent = e.target.parentElement;
+      for(var i=0; i<3; i++) {
+        // console.log('i = ' + i);
+        var dialog = parent.querySelector('#' + id);
+        if (dialog) {
+          dialog.open();
+          break;
+        }
+        parent = parent.parentElement;
+      }
+    },
+
+    _handleError: function(event) {
+      this.error = event.detail.error.message;
+      this.restResponse = event.detail.request.parseResponse();
+      this.loading = false;
+      this.success = false;
+      this.adminSecret = '';
+      this.clientSecret = '';
+      this.userPassword = '';
+      console.log(event.detail.error);
+    },
+
+    _handleResponse: function(event) {
+      // event.detail as an iron-request
+      this.error = null;
+      this.restResponse = JSON.stringify(event.detail.response);
+      this.responseCodeText = event.detail.status + " " + event.detail.statusText;
+      this.loading = false;
+      this.success = true;
+      this.adminSecret = '';
+      this.clientSecret = '';
+      this.userPassword = '';
+    },
+
+    _reset: function() {
+      this.loading = true;
+      this.restResponse = '';
+      this.error = '';
+      this.success = false;
+      this.responseCodeText = '';
+    },
+
+    _decodeToken: function(encoded) {
+      var json,
+          parts = encoded.split('.');
+      if (parts.length === 3) {
+        json = {
+          header: JSON.parse(atob(parts[0])),
+          payload: JSON.parse(atob(parts[1]))
+          // signature: atob(parts[2])
+        };
+      } else {
+        json = encoded;
+      }
+      return json;
+    },
+
+    _retargetUrl: function(url) {
+      var hostname = window.location.hostname;
+      var hostnameParts, hostSuffix;
+      hostnameParts = hostname.split('.');
+      hostnameParts.shift();
+      hostSuffix = hostnameParts.join('.');
+      if(hostname !== 'localhost' && url.indexOf(hostSuffix) < 0) {
+        // this code assumes that the service URL will look like this:
+        //  https://service-name.runSOMETHINGio/api/path
+        return url.replace(/run.*predix\.io/, hostSuffix);
+      } else {
+        return url;
+      }
+    },
+
+    __updateUaaUrl: function(newValue) {
+      newValue = newValue.trim();
+      if ( this.$.restForm.uaaUrlInput.value.endsWith('/') ) {
+        newValue = newValue.substring(0,newValue.length-1);
+      }
+      if ( newValue.endsWith('/oauth/token') ) {
+        newValue = newValue.substring(0,newValue.indexOf('/oauth/token'));
+      }
+      this.$.restForm.uaaUrlInput.value = newValue;
+      this.baseUrl = newValue;
+    },
+
+  };
+</script>

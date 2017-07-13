@@ -1,0 +1,107 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="update-client-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <p>You can give access to Predix services, by adding authorities to the UAA client.  Click the "hat" icon for more details.
+      <paper-button noink id="updateClientDetailsButton" data-dialog="updateClientDetails">
+        <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
+      </paper-button>
+    </p>
+    <form is="iron-form" id="restForm" method="post">
+      <p>
+        UAA URL: <span>{{baseUrl}}</span>/oauth/clients
+      </p>
+      <table class="starter-inputs">
+        <!-- <tr><td>New scope:</td><td><input required value="{{newScope::input}}"></td></tr> -->
+        <tr><td>New authority:</td><td style="width: 75%"><input style="width: 100%" value="{{newAuthority::input}}"></td></tr>
+      </table>
+      <p>Request</p>
+        <textarea id="updateClientRequest" rows=10 cols=100>{{restRequest}}</textarea>
+      <br/>
+      <paper-button raised noink class="starter-button" id="updateClientCommandButton" data-dialog="updateClientCommand">See cURL command</paper-button>
+      <paper-button raised noink class="starter-button starter-button-primary" id="updateClientButton">Submit</paper-button>
+      <input hidden="true" type="submit" />
+    </form>
+    <p>{{error}}</p>
+    <!-- <p hidden$="{{!success}}">Success!  Here is the response from UAA.  Notice the User is not a member of any Groups yet which will be needed later to access Services directly.</p> -->
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="updateClientCommand">
+      curl '{{baseUrl}}/oauth/clients/{{clientId}}' -X PUT -H 'Pragma: no-cache' -H 'content-type: application/json' -H 'Cache-Control: no-cache' -H 'authorization: {{adminAuthBearerToken}}' --data-binary '{{restRequest}}'
+    </tutorial-overlay>
+    <tutorial-overlay id="updateClientDetails" class="scrollable" markdown-url="/security.md#update-client"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'update-client-form',
+        properties: {
+          clientDetails: {
+            type: Object,
+            notify: true,
+            observer: 'updateClientDetails'
+          },
+          newAuthority: {
+            type: String,
+            observer: 'updateAuthorities'
+          }
+        },
+
+        updateAuthorities: function(newAuthority) {
+          this.debounce('updateAuthorities', function() {
+            // this.restRequestObject.emails[0].value = newId;
+            this.clientDetails.authorities = this.clientDetails.authorities || [];
+            var auths = this.clientDetails.authorities;
+            if (!this.authorityAdded) {
+              auths.push(newAuthority);
+              this.authorityAdded = true;
+            } else {
+              auths[auths.length-1] = newAuthority;
+            }
+            this.restRequest = JSON.stringify(this.clientDetails);
+          }, 30);
+        },
+        updateClientDetails: function(newDetails) {
+          this.restRequest = JSON.stringify(newDetails);
+          this.clientId = newDetails['client_id'];
+          this.authorityAdded = false;
+        },
+
+        ready: function() {
+          var self = this;
+          // this.restRequest = JSON.stringify(this.clientDetails);
+          var restForm = this.$.restForm;
+          restForm.addEventListener('iron-form-presubmit', function() {
+            self._reset();
+            self.authorityAdded = false;
+            this.request.url = '/api/oauth/clients/' + self.clientId;
+            this.request.method = 'put';
+            this.request.headers = {
+              "content-type": "application/json",
+              "authorization": self.adminAuthBearerToken || ""
+            };
+            this.request.body =  self.$.updateClientRequest.value; //textarea input
+          });
+          this.$.updateClientButton.addEventListener('click', function() {
+            restForm.submit();
+          });
+          this.$.updateClientCommandButton.addEventListener('click', this._overlayButtonListener);
+          this.$.updateClientDetailsButton.addEventListener('click', this._overlayButtonListener);
+        },
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>

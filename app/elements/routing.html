@@ -1,0 +1,195 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<script src="../bower_components/page/page.js"></script>
+<script>
+  window.addEventListener('WebComponentsReady', function() {
+
+    // We use Page.js for routing. This is a Micro
+    // client-side router inspired by the Express router
+    // More info: https://visionmedia.github.io/page.js/
+
+    // Middleware
+    function scrollToTop(ctx, next) {
+      app.scrollPageToTop();
+      next();
+    }
+
+    function selectApiTab() {
+      app.apiTab = true;
+      document.getElementById('mainTabControl').selected = 1;
+    }
+
+    function parseQueryParams() {
+      var urlParams;
+      var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        queryParams  = window.location.hash;
+      if (queryParams.indexOf('?') >= 0 ) {
+        queryParams = queryParams.substr(queryParams.indexOf("?")+1);
+        urlParams = {};
+        while ((match = search.exec(queryParams))) {
+          urlParams[decode(match[1])] = decode(match[2]);
+        }
+        var state = urlParams["state"];
+        while ((match = search.exec(state))) {
+          urlParams[decode(match[1])] = decode(match[2]);
+        }
+
+      }
+
+      return urlParams;
+    }
+
+    page('/', scrollToTop, function() {
+      app.route = 'home';
+      app.apiTab = false;
+
+    });
+
+    page('/setUaa/:uaaGuid', scrollToTop, function(ctx) {
+        var loginForm = document.querySelector('login-form');
+        var uaaUrl = window.location.protocol + '//';
+        var uaaServiceName = 'predix-uaa';
+        var hostName = window.location.hostname;
+        if (hostName.indexOf('predix.io') < 0) {
+          uaaServiceName = 'predix-uaa-staging';
+        }
+        uaaServiceName = ctx.params.uaaGuid + '.' + uaaServiceName;
+        if (hostName.indexOf('predix-starter') >= 0) {
+          // eventually, we can remove this, and just assume the predix-toolkit hostname.
+          uaaUrl += hostName.replace('predix-starter', uaaServiceName);
+        } else {
+          uaaUrl += hostName.replace('predix-toolkit', uaaServiceName);
+        }
+        loginForm.uaaUrl = uaaUrl;
+        page('/');
+    });
+
+    page('/loginAsAdmin', scrollToTop, function() {
+      app.route = 'loginasadmin';
+    });
+
+    page('/clientid', scrollToTop, function() {
+      app.route = 'clientid';
+    });
+
+    page('/users', scrollToTop, function() {
+      app.route = 'users';
+    });
+
+    page('/group', scrollToTop, function() {
+      app.route = 'group';
+    });
+
+    page('/addToGroup', scrollToTop, function() {
+      app.route = 'addtogroup';
+    });
+
+    page('/userToken', scrollToTop, function() {
+      app.route = 'usertoken';
+    });
+
+    page('/userAuthcode', scrollToTop, function() {
+      // TODO: can we move this into the user-authcode-form ??
+      app.route = 'userauthcode';
+      var form = document.querySelector('user-authcode-form');
+      var queryParams = parseQueryParams();
+
+      if ( queryParams && queryParams["uaaUrl"] ) {
+        form.baseUrl = queryParams["uaaUrl"];
+      }
+      if ( queryParams && queryParams["clientId"] ) {
+        var clientId = queryParams["clientId"];
+        if ( clientId.indexOf("?") >= 0 ) {
+          clientId = clientId.substring(0,clientId.indexOf("?"));
+        }
+        form.clientId = clientId;
+      }
+      if ( queryParams && queryParams["code"] ) {
+        form.authcode = queryParams["code"];
+        form.$.authcodeText.style = "display";
+        form.$.restFormForAuthcodeToken.style = "display";
+      }
+      if ( window.location.search.length > 0 ) {
+        window.location.hash = "#!/userAuthcode";
+      }
+    });
+
+    page('/checkToken', scrollToTop, function() {
+      app.route = 'checktoken';
+    });
+
+    page('/getClient', scrollToTop, function() {
+      app.route = 'getclient';
+    });
+
+    page('/updateClient', scrollToTop, function() {
+      app.route = 'updateclient';
+    });
+    page('/clientLogin', scrollToTop, function() {
+      app.route = 'clientLogin';
+    });
+
+    // API Explorer routes
+    page('/apiHome', scrollToTop, function() {
+      app.route = 'apihome';
+      selectApiTab();
+    });
+
+    page('/apiLoginClient', scrollToTop, function() {
+      app.route = 'apiloginclient';
+      selectApiTab();
+    });
+
+    page('/apiLoginUser', scrollToTop, function() {
+      app.route = 'apiloginuser';
+      selectApiTab();
+    });
+
+    page('/tsQuery', scrollToTop, function() {
+      app.route = 'tsquery';
+      selectApiTab();
+    });
+
+    page('/asset', scrollToTop, function() {
+      app.route = 'asset';
+      selectApiTab();
+    });
+
+    page('/tsIngest', scrollToTop, function() {
+      app.route = 'tsingest';
+      selectApiTab();
+    });
+
+    page('/analyticsFramework', scrollToTop, function() {
+      app.route = 'analyticsframework';
+      selectApiTab();
+    });
+
+    page('/wsClient', scrollToTop, function() {
+      app.route = 'wsclient';
+      selectApiTab();
+    });
+
+    page('/acspolicy', scrollToTop, function() {
+      app.route = 'acspolicy';
+      selectApiTab();
+    });
+
+    // add #! before urls
+    page({
+      hashbang: true
+    });
+
+  });
+</script>

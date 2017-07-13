@@ -1,0 +1,10 @@
+---
+applications:
+- name: predix-tool-kit
+  memory: 512M
+  instances: 2
+  buildpack: https://github.com/heroku/heroku-buildpack-nodejs
+  command:  node server/security-app.js
+  path: dist
+services:
+  - unittest3-redis

@@ -1,0 +1,168 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="add-to-group-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <iron-ajax id="userQueryEl" url="{{userQuery}}" handle-as="json" last-response="{{restResponse}}" method="GET"></iron-ajax>
+    <iron-ajax id="updateRequestEl" url="{{updateUrl}}" handle-as="json" last-response="{{restResponse}}" method="PUT"></iron-ajax>
+    <p>Enter user name and group name.
+      <paper-button noink id="addToGroupDetailsButton" data-dialog="addToGroupDetails">
+        <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
+      </paper-button>
+    </p>
+    <form is="iron-form" id="restForm" method="post">
+      <p>
+        UAA URL: <span>{{baseUrl}}</span><!--<span>{{groupQuery}}</span> -->
+      </p>
+      <table class="starter-inputs">
+        <tr><td>Group name:</td><td style="width: 75%"><input required style="width: 100%" value="{{groupName::input}}"></td></tr>
+        <tr><td>User name:</td><td><input required value="{{userName::input}}"></td></tr>
+      </table>
+      <!-- <p>Request</p>
+      <textarea id="clientRequest" rows=10 cols=100>{{restRequest}}</textarea> -->
+      <p>The 'get user' and 'add to group' cURL commands will be populated after you click 'Submit'.</p>
+      <paper-button raised noink class="starter-button" id="getGroupCommandButton" data-dialog="getGroupCommand">See 'get group' cURL command</paper-button>
+      <paper-button raised noink class="starter-button" id="getUserCommandButton" data-dialog="getUserCommand">See 'get user' cURL command</paper-button>
+      <paper-button raised noink class="starter-button" id="addToGroupCommandButton" data-dialog="addToGroupCommand">See 'add to group' cURL command</paper-button>
+      <br/><br/>
+      <paper-button raised noink class="starter-button starter-button-primary" id="addUserToGroupButton">Submit</paper-button>
+      <input hidden="true" type="submit" />
+    </form>
+    <p>{{error}}</p>
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="getGroupCommand">
+      curl '{{baseUrl}}/Groups?filter=displayName+eq+%22{{groupName}}%22&startIndex=1' -H 'Pragma: no-cache' -H 'content-type: application/json' -H 'Cache-Control: no-cache' -H 'authorization: {{adminAuthBearerToken}}'
+    </tutorial-overlay>
+    <tutorial-overlay id="getUserCommand">
+      curl '{{baseUrl}}/Users?attributes=id%2CuserName&filter=userName+eq+%22{{userName}}%22&startIndex=1' -H 'Pragma: no-cache' -H 'content-type: application/json' -H 'Cache-Control: no-cache' -H 'authorization: {{adminAuthBearerToken}}'
+    </tutorial-overlay>
+    <tutorial-overlay id="addToGroupCommand">
+      curl '{{baseUrl}}/Groups/{{groupId}}' -X PUT -H 'Pragma: no-cache' -H 'content-type: application/json' -H 'Cache-Control: no-cache' -H 'authorization: {{adminAuthBearerToken}}' -H 'if-match: *' --data-binary '{{restRequest}}'
+    </tutorial-overlay>
+    <tutorial-overlay id="addToGroupDetails" class="scrollable" markdown-url="/security.md#add-user-to-group"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'add-to-group-form',
+        properties: {
+          groupName: {
+            type: String,
+            value: 'security-starter-sample',
+            observer: 'updateGroupName'
+          },
+          groupId: {
+            type: String
+          },
+          userName: {
+            type: String,
+            observer: 'updateUserName'
+          },
+          userId: {
+            type: String
+          },
+          userQuery: {
+            type: String
+          },
+          groupQuery: {
+            type: String,
+            notify: true,
+          },
+          updateUrl: {
+            type: String
+          }
+        },
+
+        groupObject: {},
+
+        updateGroupName: function(newGroup) {
+          this.groupQuery = '/api/Groups?filter=displayName+eq+"' + newGroup + '"&startIndex=1';
+        },
+        updateUserName: function(newUser) {
+          this.userQuery = '/api/Users?attributes=id%2CuserName&filter=userName+eq+"' + newUser + '"&startIndex=1';
+        },
+
+        ready: function() {
+          var self = this;
+          // this.restRequest = JSON.stringify(this.restRequestObject);
+          var userQueryEl = this.$.userQueryEl;
+          var updateRequestEl = this.$.updateRequestEl;
+          var restForm = this.$.restForm;
+          restForm.addEventListener('iron-form-presubmit', function() {
+            this.request.method = 'get';
+            this.request.url = self.groupQuery; //Groups?filter=displayName+eq+%22security-starter-sample%22&startIndex=1
+            this.request.headers = {
+              "content-type": "application/json",
+              "authorization": self.adminAuthBearerToken || ""
+            };
+            self._reset();
+            // this.request.body = self.$.clientRequest.value; //textarea input
+          });
+          restForm.addEventListener('iron-form-response', function(event) {
+            self.groupId = event.detail.response.resources[0].id;
+            self.groupObject = event.detail.response.resources[0];
+            console.log('group object: ' + JSON.stringify(self.groupObject));
+            userQueryEl.headers = {
+              "content-type": "application/json",
+              "authorization": self.adminAuthBearerToken || ""
+            };
+            userQueryEl.generateRequest();
+          });
+          userQueryEl.addEventListener('response', function(event) {
+            if (event.detail.response.resources.length < 1) {
+              self.error = "User not found.";
+              return;
+            }
+            self.userId = event.detail.response.resources[0].id;
+            updateRequestEl.headers = {
+              "content-type": "application/json",
+              "authorization": self.adminAuthBearerToken || "",
+              "if-match": "*"
+            };
+            updateRequestEl.url = '/api/Groups/' + self.groupId;
+            var updateBody = {
+              meta: self.groupObject.meta,
+              id: self.groupObject.id,
+              displayName: self.groupObject.displayName,
+              schemas: self.groupObject.schemas,
+              members: []
+            };
+            self.groupObject.members = self.groupObject.members || [];
+            self.groupObject.members.forEach(function(m) {
+              updateBody.members.push(m.value);
+            });
+            updateBody.members.push(self.userId);
+            // console.log("update body: " + JSON.stringify(updateBody));
+            updateRequestEl.body = updateBody;
+            updateRequestEl.generateRequest();
+            self.restRequest = JSON.stringify(updateBody);
+          });
+          updateRequestEl.addEventListener('error', function(event) {
+            self._handleError(event);
+          });
+          this.$.addUserToGroupButton.addEventListener('click', function() {
+            restForm.submit();
+          });
+          this.$.getGroupCommandButton.addEventListener('click', this._overlayButtonListener);
+          this.$.getUserCommandButton.addEventListener('click', this._overlayButtonListener);
+          this.$.addToGroupCommandButton.addEventListener('click', this._overlayButtonListener);
+          this.$.addToGroupDetailsButton.addEventListener('click', this._overlayButtonListener);
+        },
+
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>

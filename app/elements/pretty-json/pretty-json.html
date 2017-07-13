@@ -1,0 +1,71 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="pretty-json">
+    <template>
+        <style>
+            pre {
+              white-space: pre-wrap;
+              word-wrap: break-word;
+            }
+            .string { color: green; }
+            .number { color: darkorange; }
+            .boolean { color: blue; }
+            .null { color: magenta; }
+            .key { color: red; }
+        </style>
+        <div id='json'><pre id='output'></pre></div>
+    </template>
+
+    <script>
+      (function() {
+        'use strict';
+        Polymer({
+            is: 'pretty-json',
+            properties: {
+              rawJson: {
+                type: String,
+                observer: 'rawJsonUpdated'
+              }
+            },
+            rawJsonUpdated: function(raw) {
+              //console.log('raw json: ' + raw);
+              var parsed = raw;
+              if (raw && raw.length > 0) {
+                try {
+                  parsed = JSON.parse(raw);
+                } catch (parseError) {
+                  // swallow this error, just display the raw string instead.
+                }
+              }
+              this.append(parsed);
+            },
+            append: function(JSONobject) {
+                //console.log('OUTPUT=' + JSON.stringify(JSONobject, undefined, 2));
+                Polymer.dom(this.$.output).innerHTML = this.highlight(JSONobject);
+            },
+
+            highlight: function(json) {
+                if (typeof json !== 'string') {
+                     json = JSON.stringify(json, undefined, 2);
+                }
+                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                    var cls = 'number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'key';
+                        } else {
+                            cls = 'string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'boolean';
+                    } else if (/null/.test(match)) {
+                        cls = 'null';
+                    }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                });
+            }
+        });
+      })();
+    </script>
+</dom-module>

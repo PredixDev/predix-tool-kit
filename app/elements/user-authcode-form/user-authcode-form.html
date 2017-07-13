@@ -1,0 +1,159 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="user-authcode-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <!-- <p class="paper-font-body2"></p> -->
+    <!--form1 -->
+    <form id="restForm" action="{{authcodeUrl}}" method="get" >
+      <p>Authcode login, the most secure login type.
+      <paper-button noink id="authcodeLoginDetailsButton" data-dialog="authcodeLoginDetails">
+        <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
+      </paper-button>
+      <br/>
+      Be sure to enter the correct UAA URL.  By submitting this form, you will leave this app and be redirected to UAA.
+      </p>
+      <table class="starter-inputs">
+        <input hidden="true" name="response_type" value="code" />
+        <input hidden="true" type="string" name="redirect_uri" value="{{redirectUrl}}"/>
+        <input hidden="true" type="string" name="state" value="{{state}}"/>
+        <tr><td>UAA URL:</td><td style="width: 100%;"><input name="uaaUrlInput" value="{{baseUrl::input}}" style="width: 85%;" required></td></tr>
+        <tr><td>Client ID:</td><td><input name="client_id" required value="{{clientId::input}}"></td></tr>
+      </table>
+      <paper-button raised noink class="starter-button" id="authcodeLoginCommandButton" data-dialog="authcodeLoginCommand">See full URL</paper-button>
+      <paper-button raised noink class="starter-button starter-button-primary" id="submitButton">Submit</paper-button>
+      <input hidden="true" type="submit" />
+    </form>
+    <tutorial-overlay id="authcodeLoginCommand">
+      <strong>Place this url in a browser:</strong> {{baseUrl}}/oauth/authorize?response_code=code&client_id={{clientId}}&state={{state}}&redirect_uri={{encodedRedirectUrl}}
+    </tutorial-overlay>
+    <tutorial-overlay id="authcodeLoginDetails" class="scrollable" markdown-url="/security.md#user-authcode-login"></tutorial-overlay>
+    <p id="authcodeText" style="display:none">We've sent the redirect back to this page so you can see the authcode below</p>
+    <p><b>{{authcode}}</b></p>
+
+    <!--form2 -->
+    <br>
+    <form is="iron-form" id="restFormForAuthcodeToken" method="post" style="display:none">
+      <hr>
+      <p>Now enter the client id and secret and click submit to view the User token.</p>
+      </p>
+      <table class="starter-inputs">
+        <input hidden="true" name="response_type" value="token" />
+        <input hidden="true" name="code" value="{{authcode}}" />
+        <input hidden="true" type="string" name="redirect_uri" value="{{redirectUrl}}"/>
+        <tr><td>UAA URL:</td><td style="width: 100%;"><input name="uaaUrlInput" value="{{baseUrl::input}}" style="width: 85%;" required></td></tr>
+        <tr><td>Client ID:</td><td><input name="client_id" required value="{{clientId::input}}"></td></tr>
+        <tr><td>Client Secret:</td><td><input name="clientSecret" required type="password" value="{{clientSecret::input}}"></td></tr>
+      </table>
+      <paper-button raised noink class="starter-button" id="authcodeTokenCommandButton" data-dialog="authcodeTokenCommand">See cURL command</paper-button>
+      <paper-button raised noink class="starter-button starter-button-primary" id="submitButtonForAuthcodeToken">Submit</paper-button>
+      <input hidden="true" type="submit" />
+      <p>Notice the user token returned has the scopes of the ClientId that match the user groups that the user is a member of.  For this reason, we recommend your application use a <b>login_client_id which has limited authority</b> and an app_client_id which has authority to access Predix services.
+    </form>
+    <p>{{error}}</p>
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="authcodeTokenCommand">
+      Sample curl request that is sent.  This will not work if you run it manually because of the redirect.<br>  curl '{{baseUrl}}/oauth/authorize' -H 'Pragma: no-cache' -H 'content-type: application/x-www-form-urlencoded' -H 'Cache-Control: no-cache' -H 'authorization: {{authHeader}}' --data 'code={{authcode}}&response_type=token&grant_type=authorization_code&redirect_uri={{redirectUrl}}'
+    </tutorial-overlay>
+    <tutorial-overlay id="authcodeTokenDetails" class="scrollable" markdown-url="/security.md#user-authcode-token"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'user-authcode-form',
+        properties: {
+          clientId: {
+            type: String,
+            notify: true,
+            observer: 'updateAuthHeader'
+          },
+          clientSecret: {
+            type: String,
+            notify: true,
+            observer: 'updateAuthHeader'
+          },
+          redirectUrl: {
+            type: String,
+            notify: true,
+          }
+        },
+
+        ready: function() {
+          var self = this;
+          var restForm = this.$.restForm;
+          var restForm2 = this.$.restFormForAuthcodeToken;
+
+          //form 1
+          this.$.restForm.addEventListener('submit', function() {
+            self.updateRedirectUrl();
+            restForm.uaaUrlInput.disabled=true;
+            restForm.submit();
+          });
+          this.$.submitButton.addEventListener('click', function() {
+            self.updateRedirectUrl();
+            restForm.uaaUrlInput.disabled=true;
+            restForm.submit();
+          });
+          this.$.authcodeLoginCommandButton.addEventListener('click', function(e) {
+            self.updateRedirectUrl();
+            self._overlayButtonListener(e, restForm);
+          });
+          this.$.authcodeLoginDetailsButton.addEventListener('click', this._overlayButtonListener);
+
+          //form 2
+          restForm2.addEventListener('iron-form-presubmit', function() {
+            this.request.url = this.request.body.uaaUrlInput + '/oauth/token';
+            this.request.headers = {authorization: self.authHeader};
+            this.request.body.grant_type = 'authorization_code';
+            self.baseUrl = this.request.body.uaaUrlInput;
+            delete this.request.body.clientId;
+            delete this.request.body.clientSecret;
+            self.loading = true;
+            self.restResponse = '';
+            self.error = '';
+          });
+          restForm2.addEventListener('submit', function() {
+            self.updateRedirectUrl();
+            restForm2.submit();
+          });
+          this.$.submitButtonForAuthcodeToken.addEventListener('click', function() {
+            self.updateRedirectUrl();
+            restForm2.submit();
+          });
+          this.$.authcodeTokenCommandButton.addEventListener('click', function(e) {
+            self.updateRedirectUrl();
+            self._overlayButtonListener(e, restForm);
+          });
+        },
+
+        updateAuthHeader: function() {
+          this.authHeader = 'Basic ' + btoa(this.clientId + ':' + this.clientSecret);
+        },
+
+        updateRedirectUrl: function() {
+          var state = "?clientId=" + this.$.restForm.client_id.value + "&uaaUrl=" + this.$.restForm.uaaUrlInput.value ;
+          var unencodedRedirectUrl = window.location.protocol + "//" + window.location.host + "/" + state + "/" + window.location.hash;
+          this.redirectUrl = unencodedRedirectUrl;
+          this.encodedRedirectUrl = encodeURIComponent(unencodedRedirectUrl);
+          this.state = state;
+
+          this.authcodeUrl = this.$.restForm.uaaUrlInput.value + '/oauth/authorize';
+        },
+
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>

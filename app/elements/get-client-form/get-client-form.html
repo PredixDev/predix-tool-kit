@@ -1,0 +1,80 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="get-client-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <p>Enter a Client ID to fetch details from UAA.
+      <paper-button noink id="getClientDetailsButton" data-dialog="getClientDetails">
+        <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
+      </paper-button>
+    </p>
+    <form is="iron-form" id="restForm" method="get">
+      <p>
+        UAA URL: <span>{{baseUrl}}</span>/oauth/clients
+      </p>
+      <table class="starter-inputs">
+        <tr><td>Client ID:</td><td><input required value="{{clientId::input}}"></td></tr>
+      </table>
+      <br/>
+      <paper-button raised noink class="starter-button" id="getClientCommandButton" data-dialog="getClientCommand">See cURL command</paper-button>
+      <paper-button raised noink class="starter-button starter-button-primary" id="getClientButton">Submit</paper-button>
+      <input hidden="true" type="submit" />
+    </form>
+    <p>{{error}}</p>
+    <p hidden$="{{!success}}">Success!  Here is the response from UAA.  Notice the scopes and authorites.  In the next step, we'll modify these.</p>
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="getClientCommand">
+      curl '{{baseUrl}}/oauth/clients/{{clientId}}' -H 'Pragma: no-cache' -H 'content-type: application/json' -H 'Cache-Control: no-cache' -H 'authorization: {{adminAuthBearerToken}}'
+    </tutorial-overlay>
+    <tutorial-overlay id="getClientDetails" class="scrollable" markdown-url="/security.md#get-client"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'get-client-form',
+        properties: {
+          clientId: {
+            type: String
+          },
+          clientDetails: {
+            type: Object,
+            notify: true
+          }
+        },
+        ready: function() {
+          var self = this;
+          var restForm = this.$.restForm;
+          restForm.addEventListener('iron-form-presubmit', function() {
+            self._reset();
+            this.request.url = '/api/oauth/clients/' + self.clientId;
+            this.request.headers = {
+              "content-type": "application/json",
+              "authorization": self.adminAuthBearerToken || ""
+            };
+          });
+          restForm.addEventListener('iron-form-response', function(e) {
+              self.clientDetails = e.detail.response;
+          });
+          this.$.getClientButton.addEventListener('click', function() {
+            restForm.submit();
+          });
+          this.$.getClientCommandButton.addEventListener('click', this._overlayButtonListener);
+          this.$.getClientDetailsButton.addEventListener('click', this._overlayButtonListener);
+        },
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>

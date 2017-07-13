@@ -1,0 +1,230 @@
+[
+  {
+      "label":"Create analytic taxonomy",
+      "description": "This request creates analytic taxonomy. ",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/taxonomy",
+      "body":{
+	"node_name": "Analytics",
+	    "child_nodes": [
+	        {
+	            "node_name": "Diagnostic",
+	            "child_nodes": []
+	        },
+	        {
+	            "node_name": "Descriptive",
+	            "child_nodes": []
+	        },
+	        {
+	            "node_name": "Predictive",
+	            "child_nodes": []
+	        },
+	        {
+	            "node_name": "Prescriptive",
+	            "child_nodes": []
+	        }
+	    ]
+      }
+  },
+  {
+      "label":"Create an analytic catalog entry",
+      "description": "This request creates an entry in your analytics catalog and returns an entry id. You need this analytics catalog entry id to upload, test and deploy your analytic. Change the name, version and description of the entry in the request body. ",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics",
+      "body":{
+
+    "name": "My analytic",
+    "version": "v1",
+    "supportedLanguage": "Java",
+    "taxonomyLocation": "",
+    "author": "John Doe",
+    "description": "This analytic does simple math",
+    "customMetadata": "{\"assetid\":\"abc\"}"
+      }
+  },
+  {
+    "label":"Get analytic catalog details",
+    "description":"This request gets the catalog entry details.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>"
+  },
+  {
+    "label":"Upload analytic",
+    "description":"This request uploads an actual analytic(algorithm) for an entry in your analytics catalog. Choose the jar file, analytics catalog entry id and description in the form fields below. Entry id must match an entry that exists in your analytics catalog.",
+    "headers":[
+      {
+        "key":"content-type",
+        "val":"multipart/form-data"
+      }
+      ],
+      "method":"post",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/artifacts",
+      "body": {
+        "formFields":
+        [
+          {
+            "key": "file",
+            "type": "file"
+          },
+          {
+            "key": "catalogEntryId",
+            "type": "text"
+          },
+          {
+            "key": "type",
+            "val": "Executable",
+            "type": "text"
+          },
+          {
+            "key": "description",
+            "val": "Describe what your analytic does in this text box",
+            "type": "text"
+          }
+        ]
+      }
+  },
+  {
+    "label":"Get analytic details",
+    "description":"This request gets the details of an uploaded analytic(algorithm). Enter your actual analytic catalog entry id in the path below before submitting the request.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/artifacts"
+  },
+  {
+    "label":"Validate analytic",
+    "description":"This request validates your analytic(algorithm) asynchronously and returns a request id. You need this request id to get the response when the analytic execution completes. Enter your actual analytic catalog entry id in the path below before submitting the request.",
+    "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/validation",
+      "body":{
+        "number1":700,
+        "number2":800
+      }
+  },
+  {
+    "label":"Get analytic result",
+    "description":"This request returns the result of the validation of your analytic. Enter your actual analytic catalog entry id and request id in the path below before submitting the request.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/validation/<request id goes here>"
+
+  },
+  {
+    "label":"Deploy analytic",
+    "description":"This request deploys your analytic to production asynchronously and returns a deployment id. After deployment, your analytic will be ready for runtime execution. You need this deployment id to check the status of the deployment. Enter your actual analytic catalog entry id in the path below before submitting the request.",
+    "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/deployment",
+      "body":{
+        "memory":512,
+        "diskQuota":1024,
+        "instances":1
+      }
+  },
+  {
+    "label":"Check deployment status",
+    "description":"This request checks the status of the analytic deployment. Enter your actual analytic catalog entry id and deployment id in the path below before submitting the request.",
+    "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/deployment/<deployment id goes here>"
+  },
+  {
+    "label":"Run analytic",
+    "description":"After the deployment is done, this request runs the deployed analytic. Enter your actual analytic catalog entry id in the path below before submitting the request.",
+    "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/execution",
+      "body":{
+        "number1":2,
+        "number2":4
+      }
+  },
+  {
+    "label":"Get analytic logs",
+    "description":"This request returns logs.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"text/plain"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/logs"
+  },
+    {
+      "label":"Execute analytic",
+      "description":"This request executes an analytic or set of analytics as described in BPMN xml in the request body below. Enter the name of the analytic in the request below by combining your analytic catalog entry id, name and version. For instance: 7f5dd8d5-54c3-4d81-af9e-155319b4557c::My analytic::v1",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-analytics-execution-release.run.aws-usw02-pr.ice.predix.io/api/v1/execution",
+      "body":{
+	"id": "sid-33430087-7a44-4be3-8517-914faf923288",
+	"name": "Demo SimpleMath Orchestration",
+	"bpmnXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <definitions xmlns=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" expressionLanguage=\"http://www.w3.org/1999/XPath\" id=\"sid-81430087-7a44-4be3-8517-914faf923256\" targetNamespace=\"DSP-PM\" typeLanguage=\"http://www.w3.org/2001/XMLSchema\" xsi:schemaLocation=\"http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd\" xmlns:activiti=\"http://activiti.org/bpmn\"> <process id=\"DemoAdderWorklow\" isExecutable=\"true\"> <startEvent id=\"sid-start\" name=\"\"> <outgoing>sid-flow1</outgoing> </startEvent> <serviceTask completionQuantity=\"1\" id=\"sid-10001\" isForCompensation=\"false\" name=\"7f5dd8d5-54c3-4d81-af9e-155319b4557c::My analytic::v1\" startQuantity=\"1\" activiti:delegateExpression=\"${javaDelegate}\" xmlns:activiti=\"http://activiti.org/bpmn\"> <incoming>sid-flow1</incoming> <outgoing>sid-flow2</outgoing> </serviceTask> <serviceTask completionQuantity=\"1\" id=\"sid-10002\" isForCompensation=\"false\" name=\"7f5dd8d5-54c3-4d81-af9e-155319b4557c::My analytic::v1\" startQuantity=\"1\" activiti:delegateExpression=\"${javaDelegate}\" xmlns:activiti=\"http://activiti.org/bpmn\"> <incoming>sid-flow2</incoming> <outgoing>sid-flow3</outgoing> </serviceTask> <endEvent id=\"sid-end\" name=\"\"> <incoming>sid-flow3</incoming> </endEvent> <sequenceFlow id=\"sid-flow1\" name=\"\" sourceRef=\"sid-start\" targetRef=\"sid-10001\"/> <sequenceFlow id=\"sid-flow2\" name=\"\" sourceRef=\"sid-10001\" targetRef=\"sid-10002\"/> <sequenceFlow id=\"sid-flow3\" name=\"\" sourceRef=\"sid-10002\" targetRef=\"sid-end\"/> </process> </definitions>",
+	"analyticInputData": 
+	[
+	{
+		"analyticStepId": "sid-10001",
+		"data": "{ \"number1\": 21, \"number2\": 4 }"
+	}, 
+	{
+		"analyticStepId": "sid-10002",
+		"data": "{ \"number1\": 25, \"number2\": 4 }"
+	}
+	]
+}
+  }
+]

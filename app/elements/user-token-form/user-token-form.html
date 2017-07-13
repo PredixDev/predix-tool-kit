@@ -1,0 +1,106 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="user-token-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <!-- <p class="paper-font-body2"></p> -->
+    <form is="iron-form" id="restForm" method="post">
+      <p>Client ID and secret shown for demonstration only. In your app, these should never be sent to the browser.
+      <paper-button noink id="userLoginDetailsButton" data-dialog="userLoginDetails">
+        <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
+      </paper-button>
+      </p>
+      <table class="starter-inputs">
+        <tr><td>UAA URL:</td><td style="width: 100%;"><input name="uaaUrlInput" style="width: 85%;" required value="{{baseUrl::input}}"</td></tr>
+        <tr><td>Client ID:</td><td><input name="clientId" required value="{{clientId::input}}"></td></tr>
+        <tr><td>Client Secret:</td><td><input name="clientSecret" required type="password" value="{{clientSecret::input}}"></td></tr>
+        <tr><td>User name:</td><td><input name="username" required value="{{userName::input}}"></td></tr>
+        <tr><td>Password:</td><td><input name="password" type="password" value="{{userPassword::input}}" required></td></tr>
+      </table>
+      <paper-button raised noink class="starter-button" id="userLoginCommandButton" data-dialog="userLoginCommand">See cURL command</paper-button>
+      <paper-button raised noink class="starter-button starter-button-primary" id="userLoginButton">Submit</paper-button>
+      <input hidden="true" type="submit" />
+    </form>
+    <p>{{error}}</p>
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="userLoginCommand">
+      curl '{{baseUrl}}/oauth/token' -H 'Pragma: no-cache' -H 'content-type: application/x-www-form-urlencoded' -H 'Cache-Control: no-cache' -H 'authorization: {{authHeader}}' --data 'username={{userName}}&password={{userPassword}}&grant_type=password'
+    </tutorial-overlay>
+    <tutorial-overlay id="userLoginDetails" class="scrollable" markdown-url="/security.md#login-as-user"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'user-token-form',
+        properties: {
+          userName: {
+            type: String,
+            notify: true
+          },
+          userPassword: {
+            type: String,
+            notify: true
+          },
+          clientId: {
+            type: String,
+            notify: true,
+            observer: 'updateAuthHeader'
+          },
+          clientSecret: {
+            type: String,
+            notify: true,
+            observer: 'updateAuthHeader'
+          },
+          userToken: {
+            type: String,
+            notify: true
+          }
+        },
+
+        ready: function() {
+          var self = this;
+          var restForm = this.$.restForm;
+          restForm.addEventListener('iron-form-presubmit', function() {
+            this.request.url = '/uaalogin';
+            this.request.headers = {authorization: self.authHeader};
+            this.request.body.grant_type = 'password';
+            self.baseUrl = this.request.body.uaaUrlInput;
+            delete this.request.body.clientId;
+            delete this.request.body.clientSecret;
+            self.loading = true;
+            self.restResponse = '';
+            self.error = '';
+          });
+          restForm.addEventListener('iron-form-response', function(event) {
+            self.userToken = event.detail.response["access_token"];
+          });
+          this.$.userLoginButton.addEventListener('click', function() {
+            restForm.submit();
+          });
+          this.$.userLoginCommandButton.addEventListener('click', function(e) {
+            self._overlayButtonListener(e, restForm);
+          });
+          this.$.userLoginDetailsButton.addEventListener('click', this._overlayButtonListener);
+        },
+
+        updateAuthHeader: function() {
+          this.authHeader = 'Basic ' + btoa(this.clientId + ':' + this.clientSecret);
+        },
+
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>

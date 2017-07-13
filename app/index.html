@@ -1,0 +1,519 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Polymer Starter Kit" />
+  <title>Predix Tool Kit</title>
+  <!-- Place favicon.ico in the `app/` directory -->
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#2E3AA1">
+
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tile color for Win8 -->
+  <meta name="msapplication-TileColor" content="#3372DF">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="PSK">
+  <!-- <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png"> -->
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Predix Tool Kit">
+  <!-- <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png"> -->
+
+  <!-- Tile icon for Win8 (144x144) -->
+  <!-- <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png"> -->
+
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- <link rel="stylesheet" href="bower_components/jsoneditor/dist/jsoneditor.min.css"> -->
+  <!-- endbuild-->
+
+  <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <!-- endbuild -->
+
+  <!-- will be replaced with elements/elements.vulcanized.html -->
+  <link rel="import" href="elements/elements.html">
+  <!-- endreplace-->
+
+  <!-- For shared styles, shared-styles.html import in elements.html -->
+  <style is="custom-style" include="shared-styles"></style>
+
+</head>
+
+<body unresolved class="fullbleed layout vertical">
+
+  <!-- Google Tag Manager -->
+  <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-W264TV"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-W264TV');</script>
+  <!-- End Google Tag Manager -->
+
+  <span id="browser-sync-binding"></span>
+  <template is="dom-bind" id="app">
+    <platinum-https-redirect></platinum-https-redirect>
+
+    <paper-drawer-panel id="paperDrawerPanel">
+      <!-- Drawer Scroll Header Panel -->
+      <paper-scroll-header-panel drawer fixed>
+
+        <!-- Drawer Toolbar -->
+        <paper-toolbar id="drawerToolbar">
+          <!-- <img src="images/predix-small.png" style="width: 85px; background-color: white;"></img> -->
+          <span class="paper-font-title">Predix Tool Kit</span>
+        </paper-toolbar>
+
+        <!-- Drawer Content -->
+        <div class="drawerOptions">
+          <div hidden="[[apiTab]]">
+            <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
+              <a data-route="home" href="/" on-click="onDataRouteClick">
+                <iron-icon icon="home"></iron-icon>
+                <span>Home</span>
+              </a>
+
+              <a data-route="loginasadmin" href="/loginAsAdmin" on-click="onDataRouteClick">
+                <iron-icon icon="lock-outline"></iron-icon>
+                <span>Login as Admin</span>
+              </a>
+
+              <a data-route="clientid" href="/clientid" on-click="onDataRouteClick">
+                <iron-icon icon="create"></iron-icon>
+                <span>Create Client ID</span>
+              </a>
+              <a data-route="getclient" href="/getClient" on-click="onDataRouteClick">
+                <iron-icon icon="file-download"></iron-icon>
+                <span>Get Client ID</span>
+              </a>
+              <a data-route="updateclient" href="/updateClient" on-click="onDataRouteClick">
+                <iron-icon icon="file-upload"></iron-icon>
+                <span>Update Client ID</span>
+              </a>
+              <a data-route="users" href="/users" on-click="onDataRouteClick">
+                <iron-icon icon="perm-identity"></iron-icon>
+                <span>Create User</span>
+              </a>
+              <a data-route="group" href="/group" on-click="onDataRouteClick">
+                <iron-icon icon="group-work"></iron-icon>
+                <span>Create Group</span>
+              </a>
+              <a data-route="addtogroup" href="/addToGroup" on-click="onDataRouteClick">
+                <iron-icon icon="add-circle-outline"></iron-icon>
+                <span>Add User To Group</span>
+              </a>
+              <hr/>
+              <a data-route="userauthcode" href="/userAuthcode" on-click="onDataRouteClick">
+                <iron-icon icon="lock"></iron-icon>
+                <span>User Authcode Login</span>
+              </a>
+              <a data-route="usertoken" href="/userToken" on-click="onDataRouteClick">
+                <iron-icon icon="lock"></iron-icon>
+                <span>User Password Login</span>
+              </a>
+              <a data-route="clientLogin" href="/clientLogin" on-click="onDataRouteClick">
+                <iron-icon icon="lock"></iron-icon>
+                <span>Client ID Login</span>
+              </a>
+              <a data-route="checktoken" href="checkToken" on-click="onDataRouteClick">
+                <iron-icon icon="done"></iron-icon>
+                <span>Check Token</span>
+              </a>
+              <hr/>
+              <a href="#" on-click="logout">
+                <iron-icon icon="close"></iron-icon>
+                <span>Logout</span>
+              </a>
+            </paper-menu>
+          </div>
+
+          <div hidden="[[!apiTab]]">
+            <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
+              <a data-route="apihome" href="/apiHome" on-click="onDataRouteClick">
+                <iron-icon icon="home"></iron-icon>
+                <span>API Home</span>
+              </a>
+              <a data-route="apiloginclient" href="/apiLoginClient" on-click="onDataRouteClick">
+                <iron-icon icon="lock"></iron-icon>
+                <span>Login as Client</span>
+              </a>
+              <a data-route="apiloginuser" href="/apiLoginUser" on-click="onDataRouteClick">
+                <iron-icon icon="lock"></iron-icon>
+                <span>Login as User</span>
+              </a>
+              <a data-route="asset" href="/asset" on-click="onDataRouteClick">
+                <iron-icon icon="apps"></iron-icon>
+                <span>Asset</span>
+              </a>
+              <a data-route="tsingest" href="/tsIngest" on-click="onDataRouteClick">
+                <iron-icon icon="cloud-upload"></iron-icon>
+                <span>Time Series Ingest</span>
+              </a>
+              <a data-route="tsquery" href="/tsQuery" on-click="onDataRouteClick">
+                <iron-icon icon="cloud-download"></iron-icon>
+                <span>Time Series Query</span>
+              </a>
+              <a data-route="analyticsruntime" href="/analyticsFramework" on-click="onDataRouteClick">
+                <iron-icon icon="trending-up"></iron-icon>
+                <span>Analytics Framework</span>
+              </a>
+              <a data-route="acspolicy" href="/acspolicy" on-click="onDataRouteClick">
+                <iron-icon icon="lock-outline"></iron-icon>
+                <span>Access Control Service</span>
+              </a>
+              <a data-route="wsclient" href="/wsClient" on-click="onDataRouteClick">
+                <iron-icon icon="settings-input-component"></iron-icon>
+                <span>Websocket Client</span>
+              </a>
+              <hr/>
+              <a href="#" on-click="logout">
+                <iron-icon icon="close"></iron-icon>
+                <span>Logout</span>
+              </a>
+            </paper-menu>
+          </div>
+        </div>
+      </paper-scroll-header-panel>
+
+      <!-- Main Area -->
+      <paper-scroll-header-panel main fixed>
+
+        <!-- Main Toolbar -->
+        <paper-toolbar id="mainToolbar">
+          <div paper-drawer-toggle>
+            <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+            Predix Tool Kit
+          </div>
+
+          <span class="flex"></span>
+          <paper-tabs selected="0" noink="true" id="mainTabControl">
+            <paper-tab on-click="goToHome">
+              <a data-route="home" href="/" on-click="onDataRouteClick">Security</a>
+            </paper-tab>
+            <paper-tab on-click="goToApiHome">
+              <a data-route="apihome" href="/apiHome" on-click="onDataRouteClick">API Explorer</a>
+            </paper-tab>
+          </paper-tabs>
+
+        </paper-toolbar>
+
+        <!-- Main Content -->
+        <div class="content">
+          <iron-pages attr-for-selected="data-route" selected="{{route}}">
+
+            <section data-route="home">
+              <paper-material elevation="1">
+                Configure and explore your Predix cloud environment.
+              </paper-material>
+              <paper-material elevation="1">
+                <h3>Getting Started</h3>
+                <p>
+                  This utility helps you configure your instance of Predix UAA without extra tools.
+                  After configuring UAA, you can make real API calls to Predix services.
+                  First-time users can follow the steps in the menu in order.
+                </p>
+
+                <p>
+                  First, set up the basics to create a secure microservice, including a Client ID and User.
+                  Next, set up authorities or groups and scopes, so your microservice can work with Predix platform services.
+                  Authorities are used with the "client_credentials" grant type.  Groups and scopes are used with "password" or "authorization_code" grant type.
+                  Now you're ready to make API calls to your live instances of Predix services on the API Explorer tab.
+                </p>
+                <p>
+                  This utility calls some of the REST API exposed by your instance of Predix UAA.
+                  The <a href="https://github.com/cloudfoundry/cf-uaac" target="_blank">UAAC command line tool</a> is a Ruby application that calls the same REST API, and allows for more advanced configuration.
+                </p>
+                <p>
+                  To learn more about Predix, see the <a href$="{{tutorialUrl}}">tutorials on Predix.io</a>. For more information on OAuth, read <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2" target="_blank">An Introduction to OAuth2.</a>
+                </p>
+                <p>
+                  <i>Note:</i> Make sure you're using the right instance of this utility. If not, you'll get errors.
+                </p>
+                <ul>
+                  <li><a href="https://predix-toolkit.run.aws-usw02-pr.ice.predix.io/">Predix US West</a> (formerly Predix Basic)</li>
+                  <li><a href="https://predix-toolkit.run.asv-pr.ice.predix.io/">Predix US East</a> (formerly Predix Select)</li>
+                </ul>
+              </paper-material>
+            </section>
+
+            <section data-route="loginasadmin">
+              <paper-material elevation="1">
+                First, login as admin for your UAA instance.
+              </paper-material>
+              <paper-material elevation="1">
+                <login-form uaa-url="{{uaaBaseUrl}}" admin-auth-bearer-token="{{bearerToken}}"></login-form>
+              </paper-material>
+            </section>
+
+            <section data-route="clientid">
+              <paper-material elevation="1">
+                Next, create a client ID.
+              </paper-material>
+              <paper-material elevation="1">
+                <clientid-form base-url="{{uaaBaseUrl}}" admin-auth-bearer-token="{{bearerToken}}" client-id="{{newClientId}}"></clientid-form>
+              </paper-material>
+            </section>
+
+            <section data-route="users">
+              <paper-material elevation="1">
+                Create users in UAA.
+              </paper-material>
+              <paper-material elevation="1">
+                <users-form base-url="{{uaaBaseUrl}}" admin-auth-bearer-token="{{bearerToken}}" user-name="{{newUserName}}"></users-form>
+              </paper-material>
+            </section>
+
+            <section data-route="usertoken">
+              <paper-material elevation="1">
+                Log in as the newly created user.
+              </paper-material>
+              <paper-material elevation="1">
+                <user-token-form
+                  base-url="{{uaaBaseUrl}}"
+                  client-id="{{newClientId}}"
+                  client-secret="{{newClientSecret}}"
+                  user-token="{{apiToken}}"
+                  user-name="{{newUserName}}"></user-token-form>
+              </paper-material>
+            </section>
+
+            <section data-route="userauthcode">
+              <paper-material elevation="1">
+                Log in as the newly created user.
+              </paper-material>
+              <paper-material elevation="1">
+                <user-authcode-form
+                  base-url="{{uaaBaseUrl}}"
+                  client-id="{{newClientId}}"
+                  client-secret="{{newClientSecret}}"
+                  user-token="{{apiToken}}"
+                  user-name="{{newUserName}}"></user-authcode-form>
+              </paper-material>
+            </section>
+
+            <section data-route="checktoken">
+              <paper-material elevation="1">
+                Check if token is valid.
+              </paper-material>
+              <paper-material elevation="1">
+                <check-token-form base-url="{{uaaBaseUrl}}" client-id="{{newClientId}}" client-secret="{{newClientSecret}}" user-token={{apiToken}}></check-token-form>
+              </paper-material>
+            </section>
+
+            <section data-route="group">
+              <paper-material elevation="1">
+                Create a group in UAA.
+              </paper-material>
+              <paper-material elevation="1">
+                <group-form base-url="{{uaaBaseUrl}}" admin-auth-bearer-token="{{bearerToken}}" group-name="{{newGroupName}}"></group-form>
+              </paper-material>
+            </section>
+
+            <section data-route="addtogroup">
+              <paper-material elevation="1">
+                Add user to group.
+              </paper-material>
+              <paper-material elevation="1">
+                <add-to-group-form base-url="{{uaaBaseUrl}}" admin-auth-bearer-token="{{bearerToken}}" group-name="{{newGroupName}}" user-name="{{newUserName}}"></add-to-group-form>
+              </paper-material>
+            </section>
+
+            <section data-route="getclient">
+              <paper-material elevation="1">
+                Get a UAA client to update.
+              </paper-material>
+              <paper-material elevation="1">
+                <get-client-form base-url="{{uaaBaseUrl}}" admin-auth-bearer-token="{{bearerToken}}" client-id="{{newClientId}}" client-details="{{clientDetails}}"></get-client-form>
+              </paper-material>
+            </section>
+
+            <section data-route="updateclient">
+              <paper-material elevation="1">
+                Modify a UAA client.
+              </paper-material>
+              <paper-material elevation="1">
+                <update-client-form base-url="{{uaaBaseUrl}}" admin-auth-bearer-token="{{bearerToken}}" client-details="{{clientDetails}}"></update-client-form>
+              </paper-material>
+            </section>
+
+            <section data-route="clientLogin">
+              <paper-material elevation="1">
+                  Log in as a client.
+              </paper-material>
+              <paper-material elevation="1">
+                <client-login-form base-url="{{uaaBaseUrl}}" client-id="{{newClientId}}" client-secret="{{newClientSecret}}" client-token="{{apiToken}}">
+                </client-login-form>
+              </paper-material>
+            </section>
+
+            <!-- API Explorer -->
+            <section data-route="apihome">
+              <paper-material elevation="1">
+                Test Predix APIs.
+              </paper-material>
+              <paper-material elevation="1">
+                First login as user or client, to get an authorization token.  Then you can experiment with your instances of Predix services.
+              </paper-material>
+            </section>
+
+            <section data-route="apiloginuser">
+              <paper-material elevation="1">
+                <user-token-form
+                  base-url="{{uaaBaseUrl}}"
+                  client-id="{{newClientId}}"
+                  user-token="{{apiToken}}"
+                  user-name="{{newUserName}}"></user-token-form>
+              </paper-material>
+            </section>
+
+            <section data-route="apiloginclient">
+              <paper-material elevation="1">
+                <client-login-form base-url="{{uaaBaseUrl}}" client-id="{{newClientId}}" client-token="{{apiToken}}">
+                </client-login-form>
+              </paper-material>
+            </section>
+
+            <section data-route="asset">
+              <paper-material elevation="1">
+                Execute CRUD operations on Asset
+              </paper-material>
+              <paper-material elevation="1">
+                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}" request-file-path="/requests/asset.json"
+                  current-route="{{route}}" route="asset"></api-form>
+              </paper-material>
+            </section>
+
+
+            <section data-route="tsingest">
+              <paper-material elevation="1">
+                Open a websocket, and push data to your time series instance.
+              </paper-material>
+              <paper-material elevation="1">
+                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}" predix-zone-id="{{tsZone}}"
+                  is-web-socket-request="true" request-file-path="/requests/time-series-ingestion.json"
+                  current-route="{{route}}" route="tsingest"></api-form>
+              </paper-material>
+            </section>
+
+            <section data-route="tsquery">
+              <paper-material elevation="1">
+                Make a few basic queries against your time series instance.
+              </paper-material>
+              <paper-material elevation="1">
+                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}" predix-zone-id="{{tsZone}}"
+                  request-file-path="/requests/time-series-query.json" current-route="{{route}}" route="tsquery"></api-form>
+              </paper-material>
+            </section>
+
+            <section data-route="analyticscatalog">
+              <paper-material elevation="1">
+                Manage analytics in your catalog instance.
+              </paper-material>
+              <paper-material elevation="1">
+                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}"
+                  is-web-socket-request="false" request-file-path="/requests/analytics-catalog.json"
+                  current-route="{{route}}" route="analyticscatalog"></api-form>
+              </paper-material>
+            </section>
+
+            <section data-route="analyticsframework">
+              <paper-material elevation="1">
+                Execute analytics from your catalog in the Predix cloud.
+              </paper-material>
+              <paper-material elevation="1">
+                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}"
+                  request-file-path="/requests/analytics-framework.json" current-route="{{route}}" route="analyticsframework"></api-form>
+              </paper-material>
+            </section>
+
+            <section data-route="wsclient">
+              <paper-material elevation="1">
+                Open a secure websocket, send messages and see responses. This tool assumes that all data will be sent and received as JSON.
+              </paper-material>
+              <paper-material elevation="1">
+                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}" http-method="websocket"></api-form>
+              </paper-material>
+            </section>
+
+            <section data-route="acspolicy">
+              <paper-material elevation="1">
+                Manage ACS from your catalog in the Predix cloud.
+              </paper-material>
+              <paper-material elevation="1">
+                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}" 
+                 request-file-path="/requests/acs.json" current-route="{{route}}" route="acspolicy"></api-form>
+              </paper-material>
+            </section>
+
+          </iron-pages>
+        </div>
+      </paper-scroll-header-panel>
+    </paper-drawer-panel>
+
+    <iron-ajax id="logoutEl" handle-as="json" url= '/logout' method="GET"></iron-ajax>
+
+    <!-- Uncomment next block to enable Service Worker support (1/2) -->
+    <!--
+    <paper-toast id="caching-complete"
+                 duration="6000"
+                 text="Caching complete! This app will work offline.">
+    </paper-toast>
+
+    <platinum-sw-register auto-register
+                          clients-claim
+                          skip-waiting
+                          on-service-worker-installed="displayInstalledToast">
+      <platinum-sw-cache default-cache-strategy="fastest"
+                         cache-config-file="cache-config.json">
+      </platinum-sw-cache>
+    </platinum-sw-register>
+    -->
+  </template>
+
+  <!-- build:js scripts/app.js -->
+  <script src="scripts/app.js"></script>
+  <!-- endbuild-->
+
+  <!-- <paper-material elevation="1" class="paper-font-body2">
+    <h1 id="license">License</h1>
+    <p>Everything in this repo is BSD style license unless otherwise specified.</p>
+    <p>Copyright (c) 2015 The Polymer Authors. All rights reserved.</p>
+    <p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p>
+    <ul>
+    <li>Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.</li>
+    <li>Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following disclaimer
+    in the documentation and/or other materials provided with the
+    distribution.</li>
+    <li>Neither the name of Google Inc. nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.</li>
+    </ul>
+    <p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+  </paper-material> -->
+</body>
+
+</html>

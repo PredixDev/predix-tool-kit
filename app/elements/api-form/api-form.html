@@ -1,0 +1,402 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-json/px-json.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="api-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <iron-ajax id="requestLoaderEl" handle-as="json" last-response="{{requests}}" method="GET"></iron-ajax>
+    <iron-ajax id="socketCloseEl" handle-as="json" last-response="{{restResponse}}" method="GET"></iron-ajax>
+    <form is="iron-form" id="apiForm" method="post">
+      <p>
+        UAA URL: <span>{{baseUrl}}</span>
+      </p>
+      <table class="starter-inputs">
+        <tr hidden="{{!requestFilePath}}">
+          <td>Choose Request:</td>
+          <td>
+            <paper-dropdown-menu id="requestMenu" noink no-animations on-click="loadAllRequests">
+              <paper-menu class="dropdown-content" selected="{{requestIndex}}">
+                <template is="dom-repeat" items="{{requests}}">
+                  <paper-item>{{item.label}}</paper-item>
+                </template>
+              </paper-menu>
+            </paper-dropdown-menu>
+          </td>
+        </tr>
+        <template is="dom-if" if="{{requestDefinition.description}}">
+          <tr>
+            <td>Description:</td>
+            <td>{{requestDefinition.description}}</td>
+          </tr>
+        </template>
+        <tr>
+          <td><span class$="{{computeColorClass(httpMethod)}}">{{httpMethod}}</span></td>
+          <td><span class="api-path"><input style="width: 80%" required value="{{apiUrl::input}}"></span></td>
+        </tr>
+        <tr><td><b>Request Headers</b></td><td style="width: 85%;"></td></tr>
+        <tr><td>predix-zone-id</td><td><input style="width: 35%;" name="zoneIdInput" required value="{{predixZoneId::input}}"></td></tr>
+        <tr><td>authorization</td><td>Bearer <paper-button raised noink class="starter-button" id="viewTokenButton">View Token</paper-button></td></tr>
+        <template is="dom-repeat" items="{{displayHeaders}}">
+          <tr><td>{{item.key}}</td><td>{{item.val}}</td></tr>
+        </template>
+      </table>
+      <table class="starter-inputs" hidden="{{!isMultipartFormRequest}}">
+        <tr><td><b>Form Values</b></td><td style="width: 85%;"></td></tr>
+        <template is="dom-repeat" items="{{requestDefinition.body.formFields}}">
+          <tr><td>{{item.key}}</td><td><input name="{{item.key}}" type="{{item.type}}" value="{{item.val::input}}" on-change="updateUploadFileName"></input></td></tr>
+        </template>
+      </table>
+      <div hidden$="{{!requiresBody}}">
+        <p><b>Request Body</b></p>
+        <px-json id="apiRequest" json="{{restRequest}}"></px-json>
+      </div>
+      <br/>
+      <div hidden$="{{isWebSocketRequest}}">
+        <paper-button raised noink class="starter-button" id="apiCommandButton" data-dialog="apiCommand">See cURL command</paper-button>
+        <paper-button raised noink class="starter-button starter-button-primary" id="apiButton">Submit</paper-button>
+        <input hidden="true" type="submit" />
+      </div>
+      <div hidden$="{{!isWebSocketRequest}}">
+        <paper-button raised noink class="starter-button" id="socketOpenButton">Open socket</paper-button>
+        <paper-button raised noink class="starter-button starter-button-primary" id="socketSendButton">Send message</paper-button>
+        <paper-button raised noink class="starter-button" id="socketCloseButton">Close socket</paper-button>
+      </div>
+    </form>
+    <p>{{error}}</p>
+    <p hidden$="{{!success}}">HTTP Response Code: {{responseCodeText}}</p>
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="apiCommand">
+      curl '{{apiUrl}}' -X {{httpMethod}} -H 'predix-zone-id: {{predixZoneId}}' -H 'authorization: Bearer {{token}}'
+      <template is="dom-repeat" items="{{displayHeaders}}">
+        -H '{{item.key}}: {{item.val}}'
+      </template>
+      <span hidden$="{{!requiresBody}}">--data-binary '{{stringify(restRequest)}}'</span>
+      <template hidden$="{{!isMultipartFormRequest}}" is="dom-repeat" items="{{requestDefinition.body.formFields}}">
+        <span hidden$="{{!item.isFile}}">-F '{{item.key}}=@{{uploadFileName}}'</span>
+        <span hidden$="{{item.isFile}}">-F '{{item.key}}={{item.val}}'</span>
+      </template>
+    </tutorial-overlay>
+    <tutorial-overlay id="viewApiToken"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'api-form',
+        properties: {
+          apiUrl: {
+            type: String,
+            notify: true
+          },
+          token: {
+            type: String,
+            value: 'Please log in first.'
+          },
+          predixZoneId: {
+            type: String,
+            notify: true
+          },
+          requests: {
+            type: Array
+          },
+          requestIndex: {
+            type: Number,
+            observer: 'setSelectedRequest'
+          },
+          requestFilePath: {
+            type: String,
+            value: null
+          },
+          requestDefinition: {
+            type: Object,
+            notify: true,
+            observer: 'updateHttpRequest'
+          },
+          httpMethod: {
+            type: String,
+            notify: true,
+            observer: 'methodChanged',
+            value: 'get'
+          },
+          displayHeaders: {
+            type: Array,
+            notify: true,
+            value: []
+          },
+          isWebSocketRequest: {
+            type: Boolean,
+            notify: true,
+            value: false
+          },
+          isMultipartFormRequest: {
+            type: Boolean,
+            notify: true,
+            value: false
+          },
+          socketId: {
+            type: Number
+          },
+          requiresBody: {
+            type: Boolean,
+            notify: true
+          },
+          uploadFileName: {
+            //HACK!
+            type: String
+          },
+          socket: {
+            type: Object
+          },
+          currentRoute: {
+            observer: 'routeChanged'
+          },
+          route: {
+            readonly: true
+          }
+        },
+
+        loadAllRequests: function() {
+          if (!this.requests) {
+            // make ajax request to load request file:
+            this.$.requestLoaderEl.url = this.requestFilePath;
+            this.$.requestLoaderEl.generateRequest();
+          }
+        },
+
+        updateHttpRequest: function(defn) {
+          var self = this;
+          self.success = false;
+          self.restRequest = defn.body;
+          self.restResponse = '';
+          self.error = '';
+          self.isMultipartFormRequest = false;
+          self.httpMethod = defn.method;
+          self.splice('displayHeaders', 0, self.displayHeaders.length);
+          if (defn.headers) {
+            defn.headers.forEach(function(h) {
+              self.push('displayHeaders', h);
+              if (h.val === 'multipart/form-data') {
+                self.isMultipartFormRequest = true;
+                self.requiresBody = false;
+              }
+            });
+          }
+          if (defn.body && defn.body.formFields) {
+            defn.body.formFields.forEach(function(f) {
+              f.isFile = (f.type === 'file');
+            });
+          }
+          self.apiUrl = self._retargetUrl(defn.path);
+        },
+
+        setSelectedRequest: function(index) {
+          this.requestDefinition = this.requests[index];
+        },
+
+        methodChanged: function(method) {
+          if (!method) { return; }
+          if (method.toLowerCase() === 'websocket') {
+            this.isWebSocketRequest = true;
+          } else {
+            this.isWebSocketRequest = false;
+          }
+
+          if ('websocket post put'.indexOf(method) > -1) {
+            this.requiresBody = true;
+          } else {
+            this.requiresBody = false;
+          }
+        },
+
+        routeChanged: function() {
+          if (this.route === this.currentRoute) {
+            this.loadAllRequests();
+          }
+        },
+
+        computeColorClass: function(httpMethod) {
+          var method = httpMethod ? httpMethod.toLowerCase() : 'get';
+          if (method === 'post') {
+            return 'method-box method-box-green';
+          } else if (method === 'delete') {
+            return 'method-box method-box-red';
+          } else if (method === 'websocket') {
+            return 'method-box method-box-violet';
+          } else if (method === 'patch') {
+            return 'method-box method-box-brown';
+          } else if (method === 'put') {
+            return 'method-box method-box-yellow';
+          }
+          // default to get
+          return 'method-box method-box-blue';
+        },
+
+        getFormUrl: function() {
+          var url;
+          if (!this.isWebSocketRequest) {
+            var urlParser = document.createElement('a');
+            urlParser.href = this.apiUrl;
+            url = '/proxy-api' + urlParser.pathname + urlParser.search;
+          } else {
+            url = '/open-ws';
+          }
+          return url;
+        },
+
+        updateUploadFileName: function(e) {
+          if (e.model.item.type === 'file') {
+            console.log('updateUploadFileName');
+            var fileName = document.querySelector('input[type="file"]').value;
+            var fileParts = fileName.split('\\');
+            fileName = fileParts[fileParts.length-1];
+            this.uploadFileName = fileName;
+          }
+        },
+
+        //Note: This function can only handle one file upload input, and one file.
+        buildFormDataObject: function(requestBody) {
+          var formData = new FormData();
+          var fileInput = document.querySelector('input[type="file"]');
+
+          for (var key in requestBody) {
+            if (key !== 'zoneIdInput') {
+              var value = requestBody[key];
+              if (key === fileInput.name) {
+                formData.append(key, fileInput.files[0]);
+              } else {
+                formData.append(key, value);
+              }
+            }
+          }
+          return formData;
+        },
+
+        stringify: function(obj) {
+            return JSON.stringify(obj);
+        },
+
+        ready: function() {
+          var self = this;
+          var apiForm = this.$.apiForm;
+          apiForm.addEventListener('iron-form-presubmit', function() {
+            self._reset();
+
+            this.request.url = self.getFormUrl();
+            // if this is a websocket form, we first submit an http get to open a websocket to the backend.
+            if (self.httpMethod === 'websocket' || self.requestDefinition.method === 'websocket') {
+              this.request.method = 'get';
+            } else {
+              this.request.method = self.requestDefinition.method;
+            }
+            // this.request.method = self.requestDefinition.method === 'websocket' ? 'get' : self.requestDefinition.method;
+            if (self.requestDefinition && self.requestDefinition.headers) {
+              for (var i=0; i<self.requestDefinition.headers.length; i++) {
+                var h = self.requestDefinition.headers[i];
+                this.request.headers[h.key] = h.val;
+              }
+            }
+            //console.log('request headers: ' + JSON.stringify(this.request.headers));
+            this.request.headers.authorization = "Bearer " + self.token;
+            this.request.headers['x-endpoint'] = self.apiUrl;
+            this.request.headers['predix-zone-id'] = self.predixZoneId;
+            if (self.isMultipartFormRequest) {
+              this.request.contentType = undefined;
+              this.request.body = self.buildFormDataObject(this.request.body);
+            } else {
+              this.request.body = JSON.stringify(self.$.apiRequest.json);
+            }
+          });
+          apiForm.addEventListener('iron-form-response', function(event) {
+            if (!self.isWebSocketRequest) {
+              return;
+            }
+            if (event.detail.response) {
+              self.socketId = event.detail.response.socketId;
+              // console.log('new socket id: ' + self.socketId);
+            }
+            // build path string: wss:// for cloudfoundry.  use ws:// for local dev.
+            var wsProxyUrl = 'wss://' + document.location.host;
+            // actually open the socket here!
+            self.socket = new WebSocket(wsProxyUrl);
+
+            self.socket.onopen = function() {
+              console.log('ws proxy socket open.');
+              // need to send socket ID, to bind client socket to back end socket.
+              // TODO: fix this!  it's ugly for time series ingestion.
+              self.socket.send(JSON.stringify({socketId: self.socketId, handshake: true}));
+            };
+
+            self.socket.onmessage = function(evt) {
+              console.log('message received: ' + evt.data);
+              self.restResponse = evt.data + '\n' + self.restResponse;
+              // socket.close();
+            };
+            self.socket.onerror = function(err) {
+              console.log('error from ws proxy');
+              self.error = JSON.stringify(err);
+              self.socket.close();
+            };
+          });
+          this.$.apiButton.addEventListener('click', function() {
+            apiForm.submit();
+          });
+          this.$.apiCommandButton.addEventListener('click', function(e) {
+            self._overlayButtonListener(e, apiForm);
+          });
+          this.$.requestLoaderEl.addEventListener('response', function(ironRequest) {
+            self.requests = ironRequest.detail.response;
+          });
+
+          this.$.viewTokenButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            var dialog = self.$.viewApiToken;
+            if (dialog) {
+              dialog.rawJson = self._decodeToken(self.token);
+              dialog.open();
+            }
+          });
+
+          this.$.socketOpenButton.addEventListener('click', function() {
+            apiForm.submit();
+          });
+          this.$.socketSendButton.addEventListener('click', function() {
+            console.log('socketId: ' + self.socketId);
+            self.error = '';
+
+            var requestObj;
+            try {
+              requestObj = self.$.apiRequest.json;
+              requestObj.socketId = self.socketId;
+            } catch (e) {
+              self.error = '{"error": ' + e + '}';
+              return;
+            }
+            if (self.socket.readyState === 1) {
+              self.socket.send(JSON.stringify(requestObj));
+            } else {
+              self.error = '{"error": "Web socket has closed.  Please open and try again."}';
+            }
+          });
+          this.$.socketCloseButton.addEventListener('click', function() {
+            self.$.socketCloseEl.url = "/close-ws";
+            self.$.socketCloseEl.headers = {"x-socketid": self.socketId};
+            self.$.socketCloseEl.generateRequest();
+          });
+
+        },
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>

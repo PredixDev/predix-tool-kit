@@ -1,0 +1,115 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../../bower_components/marked-element/marked-import.html">
+<link rel="import" href="../pretty-json/pretty-json.html">
+
+<dom-module id="tutorial-overlay">
+
+  <style>
+
+    :host {
+      background: white;
+      color: black;
+      padding: 24px;
+      box-shadow: rgba(0, 0, 0, 0.24) -2.3408942051048403px 5.524510324047423px 12.090680100755666px 0px, rgba(0, 0, 0, 0.12) 0px 0px 12px 0px;
+    }
+
+  </style>
+
+  <template>
+    <iron-ajax id="getMdEl" url="{{markdownUrl}}" handle-as="text" last-response="{{remoteMd}}" method="GET"></iron-ajax>
+    <content></content>
+    <div id="md"></div>
+    <pretty-json raw-json="{{rawJson}}"></pretty-json>
+  </template>
+
+</dom-module>
+
+<script>
+
+(function() {
+/* globals marked: true */
+  Polymer({
+
+    is: 'tutorial-overlay',
+
+    properties: {
+      markdownUrl: {
+        type: String,
+        notify: true
+      },
+      rawJson: {
+        type: Object,
+        notify: true
+      }
+    },
+
+    listeners: {
+      'iron-overlay-opened': 'handleOverlayOpened'
+    },
+
+    handleOverlayOpened: function() {
+      var self = this;
+      var getMdEl = this.$.getMdEl,
+        mdEl = this.$.md;
+
+      if (this.markdownUrl && this.markdownUrl.length > 0 && Polymer.dom(mdEl).children.length === 0) {
+        // console.log('fetching markdown from: ' + this.markdownUrl);
+        var parts = this.markdownUrl.split('#'),
+          elementId = parts[1];
+
+        getMdEl.addEventListener('response', function(event) {
+
+          var frag = document.createDocumentFragment(),
+            sectionFrag = document.createDocumentFragment();
+          var div = document.createElement('div');
+          div.innerHTML = marked(event.detail.response);
+          div.id = "containerDiv";
+          Polymer.dom(frag).appendChild(div); // put all the HTML from md into a DOM frag
+          var containerEl = frag.getElementById(div.id),
+              targetElement = frag.getElementById(elementId);
+          if (elementId && targetElement && containerEl && containerEl.hasChildNodes()) {
+            var childList = containerEl.childNodes,
+                inSection = false;
+            for(var i=0; i< childList.length; i++) {
+              var el = childList.item(i),
+              targetTagName, headingLevel;
+              if (el.id === elementId) {
+                inSection = true;
+                targetTagName = el.tagName;
+                // assuming our target tag is a header tag: H1, H2, H3, etc.
+                headingLevel = parseInt(targetTagName.charAt(1));
+                // console.log(headingLevel);
+              } else if (el.tagName && /[Hh]\d/.test(el.tagName)) { // we found a header tag
+                // console.log('tagName: ' + el.tagName);
+                if (parseInt(el.tagName.charAt(1)) <= headingLevel) {
+                  inSection = false;
+                }
+              }
+
+              if (inSection) {
+                Polymer.dom(sectionFrag).appendChild(el);
+              }
+            }
+          } else {
+            sectionFrag = frag; // just show the whole document
+          }
+
+          Polymer.dom(mdEl).appendChild(sectionFrag);
+          self.refit();
+        });
+
+        getMdEl.generateRequest();
+      }
+
+    },
+
+    behaviors: [
+      Polymer.IronOverlayBehavior
+    ]
+
+  });
+
+})();
+
+</script>

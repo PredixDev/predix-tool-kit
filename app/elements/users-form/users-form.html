@@ -1,0 +1,114 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="users-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <p>Create a new user for your application.
+      <paper-button noink id="userDetailsButton" data-dialog="userDetails">
+        <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
+      </paper-button>
+    </p>
+    <form is="iron-form" id="restForm" method="post">
+      <p>
+        UAA URL: <span>{{baseUrl}}</span>/Users
+      </p>
+      <table class="starter-inputs">
+        <tr><td>Username:</td><td><input name="username" required value="{{userName::input}}"></td></tr>
+        <tr><td>Password:</td><td><input name="userPassword" type="password" required value="{{userPassword::input}}"></td></tr>
+        <tr><td>Email:</td><td><input name="email" required value="{{email::input}}"></td></tr>
+      </table>
+      <p>Request</p>
+        <textarea id="clientRequest" rows=10 cols=100>{{restRequest}}</textarea>
+      <br/>
+      <paper-button raised noink class="starter-button" id="userCommandButton" data-dialog="userCommand">See cURL command</paper-button>
+      <paper-button raised noink class="starter-button starter-button-primary" id="addUserButton">Submit</paper-button>
+      <input hidden="true" type="submit" />
+    </form>
+    <p>{{error}}</p>
+    <p hidden$="{{!success}}">Success!  Here is the response from UAA.  Notice the User is not a member of any Groups yet which will be needed later to access Services directly.</p>
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="userCommand">
+      curl '{{baseUrl}}/Users' -H 'Pragma: no-cache' -H 'content-type: application/json' -H 'Cache-Control: no-cache' -H 'authorization: {{adminAuthBearerToken}}' --data-binary '{{restRequest}}'
+    </tutorial-overlay>
+    <tutorial-overlay id="userDetails" class="scrollable" markdown-url="/security.md#create-user"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'users-form',
+        properties: {
+          userName: {
+            type: String,
+            notify: true,
+            observer: 'updateUserName'
+          },
+          userPassword: {
+            type: String,
+            notify: true,
+            observer: 'updateUserPassword'
+          },
+          email: {
+            type: String,
+            notify: true,
+            observer: 'updateEmailValue'
+          }
+        },
+        restRequestObject: {
+            "userName": "",
+            "password": "",
+            "emails": [
+              {
+                "value": ""
+              }
+            ]
+        },
+        updateUserName: function(newId) {
+          this.restRequestObject.userName = newId;
+          this.restRequest = JSON.stringify(this.restRequestObject);
+        },
+        updateUserPassword: function(newId) {
+          this.restRequestObject.password = newId;
+          this.restRequest = JSON.stringify(this.restRequestObject);
+        },
+        updateEmailValue: function(newId) {
+          this.restRequestObject.emails[0].value = newId;
+          this.restRequest = JSON.stringify(this.restRequestObject);
+        },
+        ready: function() {
+          var self = this;
+          this.restRequest = JSON.stringify(this.restRequestObject);
+          var restForm = this.$.restForm;
+          restForm.addEventListener('iron-form-presubmit', function() {
+            self._reset();
+            this.request.url = '/api/Users';
+            this.request.headers = {
+              "content-type": "application/json",
+              "authorization": self.adminAuthBearerToken || ""
+            };
+            this.request.body =  self.$.clientRequest.value; //textarea input
+          });
+          this.$.addUserButton.addEventListener('click', function() {
+            restForm.submit();
+          });
+          this.$.userCommandButton.addEventListener('click', function(e) {
+            self._overlayButtonListener(e, restForm);
+          });
+          this.$.userDetailsButton.addEventListener('click', this._overlayButtonListener);
+        },
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>

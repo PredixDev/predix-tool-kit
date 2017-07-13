@@ -1,0 +1,101 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="login-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <p>Enter your UAA URL and admin secret. <paper-button noink id="showDetailsButton" data-dialog="details"><img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img></paper-button></p>
+    <form is="iron-form" id="restForm" method="post">
+      <table class="starter-inputs">
+        <tr><td>UAA URL:</td><td style="width: 100%"><input name="uaaUrlInput" style="width: 85%" required value="{{uaaUrl::input}}"></td></tr>
+        <tr><td>Admin secret:</td><td><input name="adminSecret" type="password" required value="{{adminSecret::input}}"></td></tr>
+      </table>
+      <paper-button raised noink class="starter-button" id="showCommandButton" data-dialog="command">See cURL command </paper-button>
+      <paper-button raised noink class="starter-button starter-button-primary" id="submitAdminLogin">Submit</paper-button>
+      <!-- this stupid hacky hidden input allows user to submit form with Enter key -->
+      <input hidden="true" type="submit" />
+    </form>
+    <p>{{error}}</p>
+    <p hidden$="{{!success}}">Success!  Here is the Admin token generated.  Tokens are used in Oauth Security to perform commands, such as Create Client Id.</p>
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="command">
+      curl '{{tokenUrl}}' -H 'Pragma: no-cache' -H 'content-type: application/x-www-form-urlencoded' -H 'accept: application/json' -H 'Cache-Control: no-cache' -H 'authorization: {{authHeader}}' -H 'Connection: keep-alive' --data 'grant_type=client_credentials'
+    </tutorial-overlay>
+    <tutorial-overlay id="details" class="scrollable" markdown-url="/security.md#login-as-admin"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'login-form',
+        properties: {
+          uaaUrl: {
+            type: String,
+            notify: true,
+            value: 'https://your-uaa-instance.predix-uaa.run.aws-usw02-pr.ice.predix.io',
+            observer: 'updateTokenUrl'
+          },
+          adminSecret: {
+            type: String,
+            notify: true
+          },
+          tokenUrl: {
+            type: String,
+            notify: true
+          },
+          authHeader: {
+            type: String,
+            notify: true,
+            value: 'Enter admin secret'
+          }
+        },
+
+        ready: function() {
+          var self = this;
+          var restForm = this.$.restForm;
+          restForm.addEventListener('iron-form-presubmit', function() {
+            // console.log('iron-form-presubmit event caught');
+            self.authHeader = 'Basic ' + btoa('admin:' + self.adminSecret);
+            this.request.url = '/uaalogin';
+            this.request.headers = {authorization: self.authHeader};
+            self.uaaUrl = this.request.body.uaaUrlInput;
+            delete this.request.body.adminSecret;
+            this.request.body['grant_type'] = 'client_credentials';
+            self._reset();
+          });
+          restForm.addEventListener('iron-form-response', function(event) {
+            // save token in memory for other calls:
+            self.adminAuthBearerToken = event.detail.response["token_type"] + ' ' + event.detail.response["access_token"];
+          });
+          this.$.showCommandButton.addEventListener('click', function(e) {
+            self._overlayButtonListener(e, restForm);
+          });
+          this.$.submitAdminLogin.addEventListener('click', function() {
+            restForm.submit();
+          });
+          this.$.showDetailsButton.addEventListener('click', this._overlayButtonListener);
+        },
+
+        updateTokenUrl: function(url) {
+          url = this._retargetUrl(url);
+          this.uaaUrl = url;
+          if (url && url.indexOf('http') > -1) {
+            this.tokenUrl = url + '/oauth/token';
+          }
+        },
+
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>

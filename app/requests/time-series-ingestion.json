@@ -1,0 +1,37 @@
+[
+   {
+      "label":"Ingestion Request",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"websocket",
+      "path":"wss://gateway-predix-data-services.run.aws-usw02-pr.ice.predix.io/v1/stream/messages",
+      "body":{
+         "messageId":"1453338376222",
+         "body":[
+            {
+               "name":"Compressor-2015:CompressionRatio",
+               "datapoints":[
+                  [
+                     1453338376222,
+                     10,
+                     3
+                  ],
+                  [
+                     1453338377222,
+                     10,
+                     1
+                  ]
+               ],
+               "attributes":{
+                  "host":"server1",
+                  "customer":"Acme"
+               }
+            }
+         ]
+      }
+   }
+]

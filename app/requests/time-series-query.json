@@ -1,0 +1,107 @@
+[{
+	"label": "Aggregation Request",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+	"body": {
+		"tags": [{
+			"name": "Compressor-2015:CompressionRatio",
+			"order": "desc",
+			"aggregations": [{
+				"type": "avg",
+				"sampling": {
+					"unit": "s",
+					"value": "30"
+				}
+			}]
+		}],
+		"start": 1452112200000,
+		"end": 1453458897222
+	}
+}, {
+	"label": "Get Tags",
+	"method": "get",
+	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/tags"
+}, {
+	"label": "Grouped Datapoints Request",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+	"body": {
+		"start": "1y-ago",
+		"tags": [{
+			"name": "Compressor-2015:CompressionRatio",
+			"order": "desc",
+			"groups": [{
+				"name": "quality"
+			}]
+		}]
+	}
+}, {
+	"label": "Latest Datapoints Request",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints/latest",
+	"body": {
+		"tags": [{
+			"name": "Compressor-2015:CompressionRatio"
+		}]
+	}
+}, {
+	"label": "Limited Datapoints",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+	"body": {
+		"start": "1y-ago",
+		"tags": [{
+			"name": "Compressor-2015:CompressionRatio",
+			"order": "desc",
+			"limit": 2
+		}]
+	}
+}, {
+	"label": "Ordered Datapoints Request",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+	"body": {
+		"start": "1y-ago",
+		"tags": [{
+			"name": "Compressor-2015:CompressionRatio",
+			"order": "desc"
+		}]
+	}
+}, {
+	"label": "Time Bounded Request",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+	"body": {
+		"cache_time": 0,
+		"tags": [{
+			"name": "Compressor-2015:CompressionRatio",
+			"order": "desc"
+		}],
+		"start": 1452112200000,
+		"end": 1453458897222
+	}
+}]

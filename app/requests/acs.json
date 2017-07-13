@@ -1,0 +1,293 @@
+[
+  {
+      "label":"Get the list of resources",
+      "description":"This request returns the list of ACS attribute management resource from the ACS instance.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource"
+  },
+  {
+      "label":"Add a resource",
+      "description":"This request adds a ACS attribute management resource.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"put",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource/{resourceIdentifier}",
+      "body" :{
+        "resourceIdentifier": "{resourceIdentifier}",
+        "attributes": [
+          {
+            "issuer": "https://acs.attributes.int",
+            "name": "role",
+            "value": "operator"
+          }
+        ],
+        "parents": []
+      }
+  },
+  {
+      "label":"Add multiple resources",
+      "description":"This request to add ACS attribute management resource.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource",
+      "body": [
+        {
+          "resourceIdentifier": "my_new_resource",
+          "attributes": [
+              {
+                "name": "role",
+                "value": "admin",
+                "issuer": "https://acs.attributes.int"
+              }
+            ]
+          },
+          {
+            "resourceIdentifier": "a_resource",
+            "attributes": [
+                {
+                  "name": "role",
+                  "value": "operator",
+                  "issuer": "https://acs.attributes.int"
+                }
+              ]
+            }
+
+      ]
+  },
+  {
+      "label":"Get a resource",
+      "description":"This request to get ACS attribute management subject by resourceIdentifier.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource/{resourceIdentifier}"
+  },
+  {
+      "label":"Delete a resource",
+      "description":"This request to DELETE ACS attribute management subject by resourceIdentifier.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"delete",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource/{resourceIdentifier}"
+  },
+  {
+      "label":"Get list of subjects",
+      "description":"This request returns the list of ACS attribute management subject from the ACS instance.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject"
+  },
+  {
+      "label":"Add a subject",
+      "description":"This request to add ACS attribute management subject",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"put",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject/{subjectIdentifier}",
+      "body": {
+        "subjectIdentifier": "{subjectIdentifier}",
+        "attributes": [
+            {
+              "name": "role",
+              "value": "operator",
+              "issuer": "https://acs.attributes.int"
+            }
+          ],
+          "subjectId": "subject_operator"
+        }
+  },
+  {
+      "label":"Add multiple subjects",
+      "description":"This request to add ACS attribute management subject",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject",
+      "body": [
+        {
+          "subjectIdentifier": "subject_operator",
+          "attributes": [
+              {
+                "name": "role",
+                "value": "operator",
+                "issuer": "https://acs.attributes.int"
+              }
+            ],
+            "subjectId": "subject_operator"
+          },
+          {
+            "subjectIdentifier": "admin_subject",
+            "attributes": [
+                {
+                  "name": "role",
+                  "value": "admin",
+                  "issuer": "https://acs.attributes.int"
+                }
+              ],
+              "subjectId": "admin_subject"
+            }
+
+      ]
+  },
+  {
+      "label":"Get a subject",
+      "description":"This request to get ACS attribute management subject by SubjectIdentifier",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject/{subjectIdentifier}"
+  },
+  {
+      "label":"Delete a subject",
+      "description":"This request to DELETE ACS attribute management subject by SubjectIdentifier",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"delete",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject/{subjectIdentifier}"
+  },
+  {
+      "label":"Get ACS policy-sets",
+      "description":"This request returns the list of ACS policy sets from the ACS instance.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"get",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/policy-set"
+  },
+  {
+      "label":"Add an ACS-policy",
+      "description":"This request to add policy set.Modify the path to add policy name,this should match the name attribute on post body.",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"put",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/policy-set/{name}",
+      "body":{
+        "name": "{name}",
+        "policies" :[
+            {
+              "name" : "allow-all-HTTP-requests-for-admin",
+              "target" : {
+                  "resource": {
+                    "uriTemplate" : "/manageapp"
+                  },
+                  "subject":{
+                    "name" : "has-role",
+                    "attributes" : [
+                        { "issuer" : "https://acs.attributes.int",
+                          "name" : "role" }
+                    ]
+                  }
+              },
+              "conditions" :[
+                {
+                 "name" : "",
+                 "condition" : "match.single(subject.attributes('https://acs.attributes.int', 'role'), 'admin')" }
+              ],
+              "effect" : "PERMIT"
+            },{
+               "name" : "allow-only-HTTP GET-for-non-admin",
+               "target" :{
+                 "resource" : {
+                    "uriTemplate" : "/manageapp"
+                },
+                 "action":"GET",
+                 "subject" : {
+                     "name" : "has-role",
+                     "attributes" : [
+                        { "issuer" : "https://acs.attributes.int",
+                          "name" : "role" }
+                    ]
+                 }
+               },
+               "conditions" : [
+                { "name" : "",
+                  "condition" : "match.single(subject.attributes('https://acs.attributes.int', 'role'), 'operator')" }
+                ],
+                "effect": "PERMIT"
+            },
+            {
+              "name" : "catch-all-DENY-policy",
+              "effect" : "DENY"
+            }
+        ]
+      }
+  },
+  {
+      "label":"Policy evaluation",
+      "description":"This request to evaluate ACS policy",
+      "headers":[
+         {
+            "key":"content-type",
+            "val":"application/json"
+         }
+      ],
+      "method":"post",
+      "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/policy-evaluation",
+      "body": {
+          "action": "GET",
+          "resourceIdentifier": "/manageapp",
+          "subjectAttributes": [
+            {
+              "issuer": "https://acs.attributes.int",
+              "name": "role",
+              "scopes": [
+                {}
+              ],
+              "value": "operator"
+            }
+          ],
+          "subjectIdentifier": "subject_operator"
+        }
+  }
+]

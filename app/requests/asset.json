@@ -1,0 +1,111 @@
+[{
+	"label": "Create Engine Classification (Example)",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/classification",
+	"body": [{
+		"description": "Creating Engine classification for testing purpose",
+		"uri": "/classification/engine",
+		"name": "Engine",
+		"obsolete": false,
+		"attributes": {
+			"make": {
+				"type": "string",
+				"enumeration": [],
+				"required": true,
+				"display": true,
+				"value": [
+					"GE_eng_1",
+					"GE_eng_2",
+					"GE_eng_3",
+					"GE_eng_4"
+				]
+			},
+			"mileage": {
+				"type": "string",
+				"enumeration": [
+					"gas",
+					"electrity"
+				],
+				"required": false,
+				"display": true,
+				"value": [],
+				"uom": "mpg"
+			}
+		},
+		"tags": []
+}]
+}, {
+	"label": "Query Engine Classification (Example)",
+	"method": "get",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/classification/engine"
+}, {
+	"label": "Query Engine Classification With Filter (Example)",
+	"method": "get",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/classification?filter=name=Engine"
+},   {
+	"label": "Delete Engine Classification (Example)",
+	"method": "delete",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/classification/engine"
+}, {
+	"label": "Query All Classifications",
+	"method": "get",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/classification"
+}, {
+	"label": "Create Engine (Example)",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/engine",
+	"body": [{
+		"uri": "/engine/ENG1.23",
+		"serialNo": 12345,
+		"jetEnginePart": {
+			"uri": "/part/pt9876",
+			"sNo": 55555
+		}
+	}, {
+		"uri": "/engine/ENG1.24",
+		"serialNo": 12346,
+		"jetEnginePart": {
+			"uri": "/part/pt9877",
+			"sNo": 55556
+		}
+	}]
+},  {
+	"label": "Query Specific Engine (Example)",
+	"method": "get",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/engine/ENG1.24"
+}, {
+	"label": "Query Engine using Filter (Example)",
+	"method": "get",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/engine?filter=serialNo=12346"
+}, {
+	"label": "Query All Engines",
+	"method": "get",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/engine"
+}, {
+	"label": "Create Your Custom Asset",
+	"headers": [{
+		"key": "content-type",
+		"val": "application/json"
+	}],
+	"method": "post",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/<custom-asset-type>",
+	"body": [{
+		"uri": "/<custom-asset-type>/<ID>"		
+	}]
+},  {
+	"label": "Query Your Custom Asset",
+	"method": "get",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/<custom-asset-type>/<ID>"
+}, {
+	"label": "Query Your Custom Asset Using Filter",
+	"method": "get",
+	"path": "https://predix-asset.run.aws-usw02-pr.ice.predix.io/<custom-asset-type>?filter=<custom-field>=<custom-value>"
+}]

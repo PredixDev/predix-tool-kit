@@ -1,0 +1,122 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../restform-behavior.html">
+
+<dom-module id="clientid-form">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <p>Enter a new Client ID and Client Secret.
+      <paper-button noink id="clientIdDetailsButton" data-dialog="clientIdDetails">
+        <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
+      </paper-button>
+    </p>
+    <form is="iron-form" id="restForm" method="post">
+      <p>
+        UAA URL: <span>{{baseUrl}}</span>/oauth/clients
+      </p>
+      <table class="starter-inputs">
+        <tr><td>New client ID:</td><td><input name="clientId" required value="{{clientId::input}}"></td></tr>
+        <tr><td>New client secret:</td><td><input name="clientSecret" type="password" required value="{{clientSecret::input}}"></td></tr>
+      </table>
+      <p>Request</p>
+      <textarea id="clientRequest" rows=8 cols=100>{{restRequest}}</textarea>
+      <br/>
+      <paper-button raised noink class="starter-button" id="clientIdCommandButton" data-dialog="clientIdCommand">See cURL command</paper-button>
+      <paper-button raised noink class="starter-button starter-button-primary" id="addClientIdButton">Submit</paper-button>
+      <input hidden="true" type="submit" />
+    </form>
+    <p>{{error}}</p>
+    <p hidden$="{{!success}}">Success!  Here is the response from UAA.  Notice the grant types, scopes, and authorities granted to the Client Id which define privileges granted to it by the UAA instance.</p>
+    <pretty-json raw-json="{{restResponse}}"></pretty-json>
+    <div hidden$="{{!loading}}">
+      <paper-progress indeterminate style="width: 100%"></paper-progress>
+    </div>
+    <tutorial-overlay id="clientIdCommand">
+      curl '{{baseUrl}}/oauth/clients' -H 'Pragma: no-cache' -H 'content-type: application/json' -H 'Cache-Control: no-cache' -H 'authorization: {{adminAuthBearerToken}}' --data-binary '{{restRequest}}'
+    </tutorial-overlay>
+    <tutorial-overlay id="clientIdDetails" class="scrollable" markdown-url="/security.md#create-client-id"></tutorial-overlay>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'clientid-form',
+        properties: {
+          clientId: {
+            type: String,
+            notify: true,
+            observer: 'updateClientId'
+          },
+          clientSecret: {
+            type: String,
+            notify: true,
+            observer: 'updateClientSecret'
+          }
+        },
+
+        restRequestObject: {
+            "client_id": "",
+            "client_secret": "",
+            "scope": [
+                "uaa.none",
+                "openid"
+            ],
+            "authorized_grant_types": [
+                "authorization_code",
+                "client_credentials",
+                "refresh_token",
+                "password"
+            ],
+            "authorities": [
+                "openid",
+                "uaa.none",
+                "uaa.resource"
+            ],
+            "autoapprove": [
+                "openid"
+            ]
+        },
+
+        updateClientId: function(newId) {
+          this.restRequestObject.client_id = newId;
+          this.restRequest = JSON.stringify(this.restRequestObject);
+        },
+
+        updateClientSecret: function(newSecret) {
+          this.restRequestObject.client_secret = newSecret;
+          this.restRequest = JSON.stringify(this.restRequestObject);
+        },
+
+        ready: function() {
+          var self = this;
+          this.restRequest = JSON.stringify(this.restRequestObject);
+          var restForm = this.$.restForm;
+          restForm.addEventListener('iron-form-presubmit', function() {
+            self._reset();
+            this.request.url = '/api/oauth/clients';
+            this.request.headers = {
+              "content-type": "application/json",
+              "authorization": self.adminAuthBearerToken || ""
+            };
+            this.request.body = self.$.clientRequest.value; //textarea input
+          });
+          this.$.addClientIdButton.addEventListener('click', function() {
+            restForm.submit();
+          });
+          this.$.clientIdCommandButton.addEventListener('click', function(e) {
+            self._overlayButtonListener(e, restForm);
+          });
+          this.$.clientIdDetailsButton.addEventListener('click', this._overlayButtonListener);
+        },
+
+        behaviors: [RestFormBehavior]
+      });
+    })();
+  </script>
+
+</dom-module>
