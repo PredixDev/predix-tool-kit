@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "dependencies": {
     "connect-history-api-fallback": "^1.1.0",
     "connect-redis": "^3.0.1",

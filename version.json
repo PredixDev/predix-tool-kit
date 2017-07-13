@@ -5,7 +5,7 @@
   "dependencies": {
     "local-setup": "https://github.com/PredixDev/local-setup#1.0.12",
     "predix-scripts": "https://github.com/PredixDev/predix-scripts#1.1.35",
-    "predix-tool-kit": "https://github.com/PredixDev/predix-tool-kit.git#0.0.2"
+    "predix-tool-kit": "https://github.com/PredixDev/predix-tool-kit.git#0.0.3"
   },
   "author": "gedesigntech"
 }
