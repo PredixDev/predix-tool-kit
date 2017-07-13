@@ -1,0 +1,13 @@
+---
+applications:
+- name: predix-tool-kit
+  memory: 256M
+  instances: 2
+  buildpack: https://github.com/heroku/heroku-buildpack-nodejs
+  command:  node server/security-app.js
+  path: dist
+services:
+  - security-starter-redis
+  - predix-starter-newrelic
+env:
+  PREDIX_ENV: VPC
