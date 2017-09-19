@@ -1,8 +1,8 @@
 ---
 applications:
 - name: predix-tool-kit
-  memory: 256M
-  instances: 2
+  memory: 512M
+  instances: 4
   buildpack: https://github.com/heroku/heroku-buildpack-nodejs
   command:  node server/security-app.js
   path: dist

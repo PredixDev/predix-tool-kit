@@ -171,8 +171,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       selectApiTab();
     });
 
+    page('/dataexchange', scrollToTop, function() {
+      app.route = 'dataexchange';
+      selectApiTab();
+    });
+
     page('/analyticsFramework', scrollToTop, function() {
       app.route = 'analyticsframework';
+      selectApiTab();
+    });
+
+    page('/restClient', scrollToTop, function() {
+      app.route = 'restClient';
       selectApiTab();
     });
 

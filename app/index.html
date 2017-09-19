@@ -163,9 +163,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <iron-icon icon="lock"></iron-icon>
                 <span>Login as User</span>
               </a>
+              <hr/>
+              <a data-route="acspolicy" href="/acspolicy" on-click="onDataRouteClick">
+                <iron-icon icon="lock-outline"></iron-icon>
+                <span>Access Control Service</span>
+              </a>
+              <a data-route="analyticsframework" href="/analyticsFramework" on-click="onDataRouteClick">
+                <iron-icon icon="trending-up"></iron-icon>
+                <span>Analytics Framework</span>
+              </a>
               <a data-route="asset" href="/asset" on-click="onDataRouteClick">
                 <iron-icon icon="apps"></iron-icon>
                 <span>Asset</span>
+              </a>
+              <a data-route="dataexchange" href="/dataexchange" on-click="onDataRouteClick">
+                <iron-icon icon="trending-up"></iron-icon>
+                <span>Data Exchange</span>
               </a>
               <a data-route="tsingest" href="/tsIngest" on-click="onDataRouteClick">
                 <iron-icon icon="cloud-upload"></iron-icon>
@@ -175,17 +188,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <iron-icon icon="cloud-download"></iron-icon>
                 <span>Time Series Query</span>
               </a>
-              <a data-route="analyticsruntime" href="/analyticsFramework" on-click="onDataRouteClick">
+              <a data-route="analyticsframework" href="/analyticsFramework" on-click="onDataRouteClick">
                 <iron-icon icon="trending-up"></iron-icon>
                 <span>Analytics Framework</span>
+              </a>
+              <a data-route="dataexchange" href="/dataexchange" on-click="onDataRouteClick">
+                <iron-icon icon="compare-arrows"></iron-icon>
+                <span>Data Exchange</span>
               </a>
               <a data-route="acspolicy" href="/acspolicy" on-click="onDataRouteClick">
                 <iron-icon icon="lock-outline"></iron-icon>
                 <span>Access Control Service</span>
               </a>
+              <hr/>
               <a data-route="wsclient" href="/wsClient" on-click="onDataRouteClick">
                 <iron-icon icon="settings-input-component"></iron-icon>
                 <span>Websocket Client</span>
+              </a>
+              <a data-route="restClient" href="/restClient" on-click="onDataRouteClick">
+                <iron-icon icon="send"></iron-icon>
+                <span>REST Client</span>
               </a>
               <hr/>
               <a href="#" on-click="logout">
@@ -237,7 +259,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 <p>
                   First, set up the basics to create a secure microservice, including a Client ID and User.
-                  Next, set up authorities or groups and scopes, so your microservice can work with Predix platform services.
+                  Next, set up authorities or groups and scopes, so you can access Predix platform services.
                   Authorities are used with the "client_credentials" grant type.  Groups and scopes are used with "password" or "authorization_code" grant type.
                   Now you're ready to make API calls to your live instances of Predix services on the API Explorer tab.
                 </p>
@@ -252,8 +274,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   <i>Note:</i> Make sure you're using the right instance of this utility. If not, you'll get errors.
                 </p>
                 <ul>
-                  <li><a href="https://predix-toolkit.run.aws-usw02-pr.ice.predix.io/">Predix US West</a> (formerly Predix Basic)</li>
-                  <li><a href="https://predix-toolkit.run.asv-pr.ice.predix.io/">Predix US East</a> (formerly Predix Select)</li>
+                  <li><a href="https://predix-toolkit.run.aws-usw02-pr.ice.predix.io/">Predix Toolkit - US West</a></li>
+                  <li><a href="https://predix-toolkit.run.asv-pr.ice.predix.io/">Predix Toolkit - US East Colo</a> (formerly Predix Select)</li>
+                  <li><a href="https://predix-toolkit.run.aws-jp01-pr.ice.predix.io/">Predix Toolkit - Japan 日本</a></li>
                 </ul>
               </paper-material>
             </section>
@@ -427,17 +450,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </paper-material>
             </section>
 
-            <section data-route="analyticscatalog">
-              <paper-material elevation="1">
-                Manage analytics in your catalog instance.
-              </paper-material>
-              <paper-material elevation="1">
-                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}"
-                  is-web-socket-request="false" request-file-path="/requests/analytics-catalog.json"
-                  current-route="{{route}}" route="analyticscatalog"></api-form>
-              </paper-material>
-            </section>
-
             <section data-route="analyticsframework">
               <paper-material elevation="1">
                 Execute analytics from your catalog in the Predix cloud.
@@ -445,6 +457,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-material elevation="1">
                 <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}"
                   request-file-path="/requests/analytics-framework.json" current-route="{{route}}" route="analyticsframework"></api-form>
+              </paper-material>
+            </section>
+
+            <section data-route="restClient">
+              <paper-material elevation="1">
+                Use this general purpose Predix REST client to test any service secured by Predix UAA.
+              </paper-material>
+              <paper-material elevation="1">
+                <rest-client base-url="{{uaaBaseUrl}}" token="{{apiToken}}"
+                  request-file-path="/requests/rest-client.json" current-route="{{route}}" route="restClient"></rest-client>
+              </paper-material>
+            </section>
+
+            <section data-route="dataexchange">
+              <paper-material elevation="1">
+                Execute aggregate services using data exchange handlers.
+              </paper-material>
+              <paper-material elevation="1">
+                <api-form base-url="{{uaaBaseUrl}}" token="{{apiToken}}"
+                  request-file-path="/requests/dataexchange.json" current-route="{{route}}" route="dataexchange"></api-form>
               </paper-material>
             </section>
 

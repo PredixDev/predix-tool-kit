@@ -8,7 +8,7 @@
 	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
 	"body": {
 		"tags": [{
-			"name": "Compressor-2015:CompressionRatio",
+			"name": "Compressor-2017:CompressionRatio",
 			"order": "desc",
 			"aggregations": [{
 				"type": "avg",
@@ -36,7 +36,7 @@
 	"body": {
 		"start": "1y-ago",
 		"tags": [{
-			"name": "Compressor-2015:CompressionRatio",
+			"name": "Compressor-2017:CompressionRatio",
 			"order": "desc",
 			"groups": [{
 				"name": "quality"
@@ -53,7 +53,7 @@
 	"path": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints/latest",
 	"body": {
 		"tags": [{
-			"name": "Compressor-2015:CompressionRatio"
+			"name": "Compressor-2017:CompressionRatio"
 		}]
 	}
 }, {
@@ -67,7 +67,7 @@
 	"body": {
 		"start": "1y-ago",
 		"tags": [{
-			"name": "Compressor-2015:CompressionRatio",
+			"name": "Compressor-2017:CompressionRatio",
 			"order": "desc",
 			"limit": 2
 		}]
@@ -83,7 +83,7 @@
 	"body": {
 		"start": "1y-ago",
 		"tags": [{
-			"name": "Compressor-2015:CompressionRatio",
+			"name": "Compressor-2017:CompressionRatio",
 			"order": "desc"
 		}]
 	}
@@ -98,7 +98,7 @@
 	"body": {
 		"cache_time": 0,
 		"tags": [{
-			"name": "Compressor-2015:CompressionRatio",
+			"name": "Compressor-2017:CompressionRatio",
 			"order": "desc"
 		}],
 		"start": 1452112200000,

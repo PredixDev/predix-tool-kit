@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/px-json/px-json.html">
 <link rel="import" href="../restform-behavior.html">
 
-<dom-module id="api-form">
+<dom-module id="rest-client">
   <template>
     <style>
       :host {
@@ -36,24 +36,23 @@
         </template>
         <tr>
           <td><span class$="{{computeColorClass(httpMethod)}}">{{httpMethod}}</span></td>
-          <td><span class="api-path"><input style="width: 80%" required value="{{apiUrl::input}}"></span></td>
+          <td><span class="rest-path"><input style="width: 97%" required value="{{apiUrl::input}}"></span></td>
         </tr>
-        <tr><td><b>Request Headers</b></td><td style="width: 85%;"></td></tr>
-        <tr><td>predix-zone-id</td><td><input style="width: 35%;" name="zoneIdInput" required value="{{predixZoneId::input}}"></td></tr>
-        <tr><td>authorization</td><td>Bearer <paper-button raised noink class="starter-button" id="viewTokenButton">View Token</paper-button></td></tr>
-        <template is="dom-repeat" items="{{displayHeaders}}">
-          <tr><td>{{item.key}}</td><td>{{item.val}}</td></tr>
-        </template>
       </table>
-      <table class="starter-inputs" hidden="{{!isMultipartFormRequest}}">
-        <tr><td><b>Form Values</b></td><td style="width: 85%;"></td></tr>
-        <template is="dom-repeat" items="{{requestDefinition.body.formFields}}">
-          <tr><td>{{item.key}}</td><td><input name="{{item.key}}" type="{{item.type}}" value="{{item.val::input}}" on-change="updateUploadFileName"></input></td></tr>
+
+      <table class="starter-inputs">
+        <tr><td><b>Request Headers</b></td><td style="width: 85%;"></td></tr>
+        <tr><td>authorization</td><td>Bearer <paper-button raised noink class="starter-button" id="viewTokenButton">View Token</paper-button></td></tr>
+        <template is="dom-repeat" items="{{restClientHeaders}}">
+          <tr>
+            <td><input style="width: 75%" name="{{item.key}}" type="{{item.type}}" placeholder="Header name" value="{{item.key::input}}"</input></td>
+            <td><input name="{{item.val}}" type="{{item.type}}" placeholder="Header value" value="{{item.val::input}}"></input></td>
+          </tr>
         </template>
       </table>
       <div hidden$="{{!requiresBody}}">
         <p><b>Request Body</b></p>
-        <px-json id="apiRequest" json="{{restRequest}}"></px-json>
+        <px-json id="apiRequest" json=""></px-json>
       </div>
       <br/>
       <div hidden$="{{isWebSocketRequest}}">
@@ -74,8 +73,8 @@
       <paper-progress indeterminate style="width: 100%"></paper-progress>
     </div>
     <tutorial-overlay id="apiCommand">
-      curl '{{apiUrl}}' -X {{httpMethod}} -H 'predix-zone-id: {{predixZoneId}}' -H 'authorization: Bearer {{token}}'
-      <template is="dom-repeat" items="{{displayHeaders}}">
+      curl '{{apiUrl}}' -X {{httpMethod}} -H 'authorization: Bearer {{token}}' 
+      <template is="dom-repeat" items="{{restClientHeaders}}">
         -H '{{item.key}}: {{item.val}}'
       </template>
       <span hidden$="{{!requiresBody}}">--data-binary '{{stringify(restRequest)}}'</span>
@@ -92,7 +91,7 @@
       'use strict';
 
       Polymer({
-        is: 'api-form',
+        is: 'rest-client',
         properties: {
           apiUrl: {
             type: String,
@@ -285,7 +284,19 @@
             return JSON.stringify(obj);
         },
 
+	toggleSelection: function(e) {
+        var item = this.$.employeeList.itemForElement(e.target);
+        this.$.selector.select(item);
+      },
+
         ready: function() {
+          this.restClientHeaders = [
+            {"key": "", "val": ""},
+            {"key": "", "val": ""},
+            {"key": "", "val": ""},
+            {"key": "", "val": ""},
+            {"key": "", "val": ""}
+          ];
           var self = this;
           var apiForm = this.$.apiForm;
           apiForm.addEventListener('iron-form-presubmit', function() {
@@ -299,16 +310,18 @@
               this.request.method = self.requestDefinition.method;
             }
             // this.request.method = self.requestDefinition.method === 'websocket' ? 'get' : self.requestDefinition.method;
-            if (self.requestDefinition && self.requestDefinition.headers) {
-              for (var i=0; i<self.requestDefinition.headers.length; i++) {
-                var h = self.requestDefinition.headers[i];
-                this.request.headers[h.key] = h.val;
+            if (self.restClientHeaders) {
+              for (var i=0; i<self.restClientHeaders.length; i++) {
+                var h = self.restClientHeaders[i];
+                if (h.key !== '') {
+                  this.request.headers[h.key] = h.val;
+                }
               }
             }
-            //console.log('request headers: ' + JSON.stringify(this.request.headers));
             this.request.headers.authorization = "Bearer " + self.token;
             this.request.headers['x-endpoint'] = self.apiUrl;
-            this.request.headers['predix-zone-id'] = self.predixZoneId;
+            console.log('request headers: ' + JSON.stringify(this.request.headers));
+            //this.request.headers['predix-zone-id'] = self.predixZoneId;
             if (self.isMultipartFormRequest) {
               this.request.contentType = undefined;
               this.request.body = self.buildFormDataObject(this.request.body);

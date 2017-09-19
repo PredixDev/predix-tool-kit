@@ -1,0 +1,25 @@
+[
+  {
+      "label":"GET REQUEST",
+      "method":"get",
+      "path":"",
+      "body":{}
+  },
+  {
+      "label":"POST REQUEST",
+      "method":"post",
+      "path":"",
+      "body":{}
+  },
+  {
+    "label":"PUT REQUEST",
+      "method":"put",
+      "path":"",
+      "body":{}
+  },
+  {
+    "label":"DELETE REQUEST",
+      "method":"delete",
+      "path":""
+  }
+]
