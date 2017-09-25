@@ -391,6 +391,7 @@
             self.$.socketCloseEl.url = "/close-ws";
             self.$.socketCloseEl.headers = {"x-socketid": self.socketId};
             self.$.socketCloseEl.generateRequest();
+            self.socket.close();
           });
 
         },

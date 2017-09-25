@@ -246,10 +246,21 @@ app.use(function logErrors(err, req, res, next) {
 var wsServer = new WebSocketServer({
 	server: httpServer,
 	verifyClient: function(info) {
-		//console.log('verifyClient');
-		// TODO: verify hostname at least
-		// console.log(JSON.stringify(info));
-		return true;
+		if (!process.env.VCAP_APPLICATION) {
+			return true; // running locally
+		} else {
+			// verify host and origin headers.
+			var validHost = false, validOrigin = false;
+			var vcap = JSON.parse(process.env.VCAP_APPLICATION);
+			if (vcap.application_uris) { 
+				vcap.application_uris.forEach(function(uri) {
+					validHost = uri === info.req.headers.host ? true : false;
+					validOrigin = info.origin.indexOf(uri) >= 0 ? true : false;
+				});
+			}
+			// console.log('verifyClient returning', validHost && validOrigin);
+			return validHost && validOrigin;
+		}
 	}
 });
 
@@ -271,6 +282,7 @@ wsServer.on('connection', function connection(ws) {
 		if (!apiSocket || apiSocket.readyState !== WebSocket.OPEN) {
 			ws.send('{"error": "socket to back end API has closed."}');
 			delete sockets[incomingData.socketId];
+			ws.close();  // also close socket to browser.
 			return;
 		}
 		// pass request through to back end api:
@@ -288,7 +300,20 @@ wsServer.on('connection', function connection(ws) {
 			console.log('socket to back end API has closed. code: ' + code + ' message: ' + message);
 			delete sockets[incomingData.socketId];
 		});
-  });
+		apiSocket.on('error', function(error) {
+			console.error('error from socket connection to back end API. ', error);
+		});
+  	});
+	ws.on('close', function(code) {
+		console.log('close message received from client.', code);
+	});
+	ws.on('error', function(error) {
+		console.log('error from client: ', error);
+	});
+});
+
+wsServer.on('error', function(error) {
+	console.error('error emitted from websocket server', error);
 });
 
 setInterval(function cleanupSockets() {
@@ -310,5 +335,8 @@ httpServer.on('request', app);
 httpServer.listen(process.env.VCAP_APP_PORT || 5000, function() {
 	console.log('Listening on port ' + httpServer.address().port);
 });
+httpServer.on('clientError', function(error) {
+	console.error('client error', error);
+})
 
 module.exports = app;
