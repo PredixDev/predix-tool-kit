@@ -21,7 +21,7 @@ var sockets = {};
 var corporateProxyAgent;
 var sessionOptions = {
 	secret: 'njk2389adsf98yr23hre98',
-	name: 'security-starter-cookie',
+	name: 'JSESSIONID', // This tells CF to keep sessions on a single instance of the app. 
 	resave: true,
 	saveUninitialized: false,
 	// proxy: true,   // not sure about this one...
@@ -278,6 +278,7 @@ wsServer.on('connection', function connection(ws) {
 			ws.send('{"error": "missing socketId"}');
 			return;
 		}
+		// console.log('message from browser with socketId:', incomingData.socketId);
 		var apiSocket = sockets[incomingData.socketId];
 		if (!apiSocket || apiSocket.readyState !== WebSocket.OPEN) {
 			ws.send('{"error": "socket to back end API has closed."}');

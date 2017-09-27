@@ -1,11 +1,11 @@
 {
   "name": "Predix Tool Kit",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "private": true,
   "dependencies": {
     "local-setup": "https://github.com/PredixDev/local-setup#1.0.17",
     "predix-scripts": "https://github.com/PredixDev/predix-scripts#1.1.44",
-    "predix-tool-kit": "https://github.com/PredixDev/predix-tool-kit.git#1.0.28"
+    "predix-tool-kit": "https://github.com/PredixDev/predix-tool-kit.git#1.0.29"
   },
   "author": "gedesigntech"
 }
