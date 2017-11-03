@@ -7,4 +7,4 @@ applications:
   command:  node server/security-app.js
   path: dist
 services:
-  - unittest3-redis
+  - toolkit-cache

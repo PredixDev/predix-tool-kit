@@ -1,4 +1,4 @@
-## Predix Security Starter Kit
+## Predix Tool Kit
 
 ### Prerequisites
 
@@ -22,7 +22,7 @@ The version should be at or above 0.10.x.
 <https://github.com/cloudfoundry/cli/releases/tag/v6.12.2>
 Then you'll need to login with your Predix credentials.
 
-4) Run these commands in the root `security-starter` directory of this project.
+4) Run these commands in the root `predix-tool-kit` directory of this project.
 ```
 npm install -g bower
 npm install

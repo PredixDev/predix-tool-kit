@@ -7,7 +7,7 @@ applications:
   command:  node server/security-app.js
   path: dist
 services:
-  - security-starter-redis
+  - toolkit-cache
   - predix-starter-newrelic
 env:
   PREDIX_ENV: VPC

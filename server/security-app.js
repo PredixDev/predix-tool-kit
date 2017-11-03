@@ -76,7 +76,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 if (process.env.VCAP_SERVICES) {  // use redis when running in cloud
 	var vcapServices = JSON.parse(process.env.VCAP_SERVICES);
-	var vcapRedis = (vcapServices['redis-1'] || vcapServices['p-redis'] || vcapServices['redis-11'])[0];
+	var vcapRedis = vcapServices['predix-cache'][0];
 	sessionOptions.store = new RedisStore({
 		host: vcapRedis.credentials.host,
 		port: vcapRedis.credentials.port,
