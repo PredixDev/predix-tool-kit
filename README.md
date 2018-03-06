@@ -28,7 +28,7 @@ npm install -g bower
 npm install
 bower install
 ```
-(If you have trouble with the npm install, try `npm install --production` to install only the bare-bones dependencies to run the app, not include dev dependencies.)
+(If you have trouble with the npm install, try `npm install --production` to install only the bare-bones dependencies to run the app, not including dev dependencies.)
 
 ### Getting Started
 

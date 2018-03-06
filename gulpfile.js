@@ -314,8 +314,10 @@ gulp.task('serve:dist', ['default'], function () {
   });
 });
 
+gulp.task('default', ['dist']);
+
 // Build production files, the default task
-gulp.task('default', ['clean'], function (cb) {
+gulp.task('dist', ['clean'], function (cb) {
   // Uncomment 'cache-config' after 'rename-index' if you are going to use service workers.
   runSequence(
     ['copy', 'styles'],
