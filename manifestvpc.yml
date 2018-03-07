@@ -2,12 +2,11 @@
 applications:
 - name: predix-toolkit
   memory: 512M
-  instances: 4
+  instances: 2
   buildpack: https://github.com/heroku/heroku-buildpack-nodejs
   command:  node server/security-app.js
   path: dist
 services:
   - toolkit-cache
-  - predix-starter-newrelic
 env:
   PREDIX_ENV: VPC

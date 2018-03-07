@@ -1,6 +1,6 @@
 ---
 applications:
-- name: predix-tool-kit
+- name: predix-toolkit
   memory: 512M
   instances: 2
   buildpack: https://github.com/heroku/heroku-buildpack-nodejs

@@ -1,8 +1,8 @@
 'use strict';
 
-if (process.env.NODE_ENV === 'production' && process.env.PREDIX_ENV === 'VPC') {
-	require('newrelic'); // This needs to be loaded before other modules.
-}
+// if (process.env.NODE_ENV === 'production' && process.env.PREDIX_ENV === 'VPC') {
+// 	require('newrelic'); // This needs to be loaded before other modules.
+// }
 var httpServer = require('http').createServer();
 var express = require('express');
 var path = require('path');
