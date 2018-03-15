@@ -9,7 +9,7 @@
       }
     </style>
     <p>Enter your UAA URL and admin secret. <paper-button noink id="showDetailsButton" data-dialog="details"><img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img></paper-button></p>
-    <form is="iron-form" id="restForm" method="post">
+    <form is="iron-form" class="restForm" method="post">
       <table class="starter-inputs">
         <tr><td>UAA URL:</td><td style="width: 100%"><input name="uaaUrlInput" style="width: 85%" required value="{{uaaUrl::input}}"></td></tr>
         <tr><td>Admin secret:</td><td><input name="adminSecret" type="password" required value="{{adminSecret::input}}"></td></tr>
@@ -46,7 +46,8 @@
           },
           adminSecret: {
             type: String,
-            notify: true
+            notify: true,
+            observer: '_updateAuthHeaderForCurl'
           },
           tokenUrl: {
             type: String,
@@ -55,13 +56,13 @@
           authHeader: {
             type: String,
             notify: true,
-            value: 'Enter admin secret'
+            value: 'Enter admin secret'            
           }
         },
 
         ready: function() {
           var self = this;
-          var restForm = this.$.restForm;
+          var restForm = this.$$('.restForm');
           restForm.addEventListener('iron-form-presubmit', function() {
             // console.log('iron-form-presubmit event caught');
             self.authHeader = 'Basic ' + btoa('admin:' + self.adminSecret);
@@ -83,6 +84,10 @@
             restForm.submit();
           });
           this.$.showDetailsButton.addEventListener('click', this._overlayButtonListener);
+        },
+        
+        _updateAuthHeaderForCurl: function(secret) {
+          this.authHeader = 'Basic ' + btoa('admin:' + secret);
         },
 
         updateTokenUrl: function(url) {

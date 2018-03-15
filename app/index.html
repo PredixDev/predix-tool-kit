@@ -259,14 +259,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   To learn more about Predix, see the <a href$="{{tutorialUrl}}">tutorials on Predix.io</a>. For more information on OAuth, read <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2" target="_blank">An Introduction to OAuth2.</a>
                 </p>
                 <p>
-                  <i>Note:</i> Make sure you're using the right instance of this utility. If not, you'll get errors.
+                  <i>Note:</i> This utility works across various Predix Points-of-Presence (US West, US East, EU, Japan). 
+                  Services must in the same PoP as the UAA instance.
                 </p>
-                <ul>
-                  <li><a href="https://predix-toolkit.run.aws-usw02-pr.ice.predix.io/">Predix Toolkit - US West</a></li>
-                  <li><a href="https://predix-toolkit.run.asv-pr.ice.predix.io/">Predix Toolkit - US East Colo</a> (formerly Predix Select)</li>
-                  <li><a href="https://predix-toolkit.run.aws-jp01-pr.ice.predix.io/">Predix Toolkit - Japan 日本</a></li>
-                </ul>
               </paper-material>
+              <user-session uaa-url="{{uaaBaseUrl}}"></user-session>
             </section>
 
             <section data-route="loginasadmin">

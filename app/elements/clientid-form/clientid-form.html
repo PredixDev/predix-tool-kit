@@ -13,7 +13,7 @@
         <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
       </paper-button>
     </p>
-    <form is="iron-form" id="restForm" method="post">
+    <form is="iron-form" class="restForm" method="post">
       <p>
         UAA URL: <span>{{baseUrl}}</span>/oauth/clients
       </p>
@@ -100,7 +100,7 @@
         ready: function() {
           var self = this;
           this.restRequest = JSON.stringify(this.restRequestObject);
-          var restForm = this.$.restForm;
+          var restForm = this.$$('.restForm');
           restForm.addEventListener('iron-form-presubmit', function() {
             self._reset();
             this.request.url = '/api/oauth/clients';

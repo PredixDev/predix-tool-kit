@@ -13,7 +13,7 @@
         <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
       </paper-button>
     </p>
-    <form is="iron-form" id="restForm" method="post">
+    <form is="iron-form" class="restForm" method="post">
       <table class="starter-inputs">
         <tr><td>UAA URL:</td><td><span>{{baseUrl}}</span>/check_token</td></tr>
         <tr><td>Client ID:</td><td><input name="clientId" required value="{{clientId::input}}"></td></tr>
@@ -70,7 +70,7 @@
         ready: function() {
           var self = this;
           this.restRequest = JSON.stringify(this.restRequestObject);
-          var restForm = this.$.restForm;
+          var restForm = this.$$('.restForm');
           restForm.addEventListener('iron-form-presubmit', function() {
             this.request.url = '/api/check_token';
             this.request.headers = {

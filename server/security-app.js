@@ -148,6 +148,16 @@ app.use('/api', function(req, res, next) {
 	}
 });
 
+app.get('/session', (req, res) => {
+  if (req.session && req.session.uaaUrl) {
+    res.status(200).send({
+      uaaUrl: req.session.uaaUrl
+    });
+  } else {
+    res.status(200).send({});
+  }
+});
+
 // using express-http-proxy, we can pass in a function to get the target URL for dynamic proxying:
 app.use('/api', expressProxy(getUaaUrlFromSession, {
 		https: true,
@@ -253,12 +263,13 @@ var wsServer = new WebSocketServer({
 			var validHost = false, validOrigin = false;
 			var vcap = JSON.parse(process.env.VCAP_APPLICATION);
 			if (vcap.application_uris) { 
-				vcap.application_uris.forEach(function(uri) {
+				vcap.application_uris.some(uri => {
 					validHost = uri === info.req.headers.host ? true : false;
-					validOrigin = info.origin.indexOf(uri) >= 0 ? true : false;
+          validOrigin = info.origin.indexOf(uri) >= 0 ? true : false;
+          return validHost && validOrigin;
 				});
 			}
-			// console.log('verifyClient returning', validHost && validOrigin);
+			console.log('verifyClient returning', validHost && validOrigin);
 			return validHost && validOrigin;
 		}
 	}

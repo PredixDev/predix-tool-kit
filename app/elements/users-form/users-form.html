@@ -13,7 +13,7 @@
         <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
       </paper-button>
     </p>
-    <form is="iron-form" id="restForm" method="post">
+    <form is="iron-form" class="restForm" method="post">
       <p>
         UAA URL: <span>{{baseUrl}}</span>/Users
       </p>
@@ -23,7 +23,7 @@
         <tr><td>Email:</td><td><input name="email" required value="{{email::input}}"></td></tr>
       </table>
       <p>Request</p>
-        <textarea id="clientRequest" rows=10 cols=100>{{restRequest}}</textarea>
+        <textarea id="createUserRequest" rows=10 cols=100>{{restRequest}}</textarea>
       <br/>
       <paper-button raised noink class="starter-button" id="userCommandButton" data-dialog="userCommand">See cURL command</paper-button>
       <paper-button raised noink class="starter-button starter-button-primary" id="addUserButton">Submit</paper-button>
@@ -88,7 +88,7 @@
         ready: function() {
           var self = this;
           this.restRequest = JSON.stringify(this.restRequestObject);
-          var restForm = this.$.restForm;
+          var restForm = this.$$('.restForm');
           restForm.addEventListener('iron-form-presubmit', function() {
             self._reset();
             this.request.url = '/api/Users';
@@ -96,7 +96,7 @@
               "content-type": "application/json",
               "authorization": self.adminAuthBearerToken || ""
             };
-            this.request.body =  self.$.clientRequest.value; //textarea input
+            this.request.body =  self.$.createUserRequest.value; //textarea input
           });
           this.$.addUserButton.addEventListener('click', function() {
             restForm.submit();

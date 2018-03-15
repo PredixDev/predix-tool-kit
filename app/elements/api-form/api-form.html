@@ -11,7 +11,7 @@
     </style>
     <iron-ajax id="requestLoaderEl" handle-as="json" last-response="{{requests}}" method="GET"></iron-ajax>
     <iron-ajax id="socketCloseEl" handle-as="json" last-response="{{restResponse}}" method="GET"></iron-ajax>
-    <form is="iron-form" id="apiForm" method="post">
+    <form is="iron-form" class="restForm" method="post">
       <p>
         UAA URL: <span>{{baseUrl}}</span>
       </p>
@@ -40,7 +40,11 @@
         </tr>
         <tr><td><b>Request Headers</b></td><td style="width: 85%;"></td></tr>
         <tr><td>predix-zone-id</td><td><input style="width: 35%;" name="zoneIdInput" required value="{{predixZoneId::input}}"></td></tr>
-        <tr><td>authorization</td><td>Bearer <paper-button raised noink class="starter-button" id="viewTokenButton">View Token</paper-button></td></tr>
+        <tr>
+          <td>authorization</td>
+            <td hidden$="{{!token}}">Bearer <paper-button raised noink class="starter-button" id="viewTokenButton">View Token</paper-button></td>
+            <td hidden$="{{token}}"><strong style="color: red">No token.  Please log in.</strong></td>
+        </tr>
         <template is="dom-repeat" items="{{displayHeaders}}">
           <tr><td>{{item.key}}</td><td>{{item.val}}</td></tr>
         </template>
@@ -100,7 +104,7 @@
           },
           token: {
             type: String,
-            value: 'Please log in first.'
+            value: null
           },
           predixZoneId: {
             type: String,
@@ -221,6 +225,9 @@
         routeChanged: function() {
           if (this.route === this.currentRoute) {
             this.loadAllRequests();
+            if (this.requestDefinition) {
+              this.apiUrl = this._retargetUrl(this.requestDefinition.path);
+            }
           }
         },
 
@@ -287,7 +294,7 @@
 
         ready: function() {
           var self = this;
-          var apiForm = this.$.apiForm;
+          var apiForm = this.$$('.restForm');
           apiForm.addEventListener('iron-form-presubmit', function() {
             self._reset();
 

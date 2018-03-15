@@ -112,29 +112,39 @@
     },
 
     _retargetUrl: function(url) {
-      var hostname = window.location.hostname;
-      var hostnameParts, hostSuffix;
-      hostnameParts = hostname.split('.');
-      hostnameParts.shift();
-      hostSuffix = hostnameParts.join('.');
-      if(hostname !== 'localhost' && url.indexOf(hostSuffix) < 0) {
+      // URLs in the /requests json files point to US west.
+      // If user is logged in to UAA in another PoP, retartget the request URL to that PoP.
+      // Defaults to US West
+      var updatedUrl = url;
+      var hostSuffix = "run.aws-usw02-pr.ice.predix.io";
+      var sessionEl = document.querySelector('user-session');
+      if (sessionEl && sessionEl.uaaUrl) {
+        // console.log('uaa URL: ', sessionEl.uaaUrl);
+        var hostnameParts = sessionEl.uaaUrl.split('.');
+        hostSuffix = hostnameParts.slice(2).join('.');
+      }
+      // console.log('hostSuffix:', hostSuffix);
+      if(url.indexOf(hostSuffix) < 0) {
         // this code assumes that the service URL will look like this:
         //  https://service-name.runSOMETHINGio/api/path
-        return url.replace(/run.*predix\.io/, hostSuffix);
-      } else {
-        return url;
+        updatedUrl = url.replace(/run.*predix\.io/, hostSuffix);
       }
+      if (updatedUrl.indexOf('time-series-store-predix') > 0 && hostSuffix.indexOf('asv-pr') > 0) {
+        updatedUrl = updatedUrl.replace('time-series-store-predix.run.asv-pr', 'tsqs');
+      }
+      // console.log('updatedUrl: ', updatedUrl);
+      return updatedUrl;
     },
 
     __updateUaaUrl: function(newValue) {
       newValue = newValue.trim();
-      if ( this.$.restForm.uaaUrlInput.value.endsWith('/') ) {
+      if ( this.$$('.restForm').uaaUrlInput.value.endsWith('/') ) {
         newValue = newValue.substring(0,newValue.length-1);
       }
       if ( newValue.endsWith('/oauth/token') ) {
         newValue = newValue.substring(0,newValue.indexOf('/oauth/token'));
       }
-      this.$.restForm.uaaUrlInput.value = newValue;
+      this.$$('.restForm').uaaUrlInput.value = newValue;
       this.baseUrl = newValue;
     },
 

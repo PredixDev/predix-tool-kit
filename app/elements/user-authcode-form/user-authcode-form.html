@@ -10,7 +10,7 @@
     </style>
     <!-- <p class="paper-font-body2"></p> -->
     <!--form1 -->
-    <form id="restForm" action="{{authcodeUrl}}" method="get" >
+    <form class="restForm" action="{{authcodeUrl}}" method="get" >
       <p>Authcode login, the most secure login type.
       <paper-button noink id="authcodeLoginDetailsButton" data-dialog="authcodeLoginDetails">
         <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
@@ -92,11 +92,11 @@
 
         ready: function() {
           var self = this;
-          var restForm = this.$.restForm;
+          var restForm = this.$$('.restForm');
           var restForm2 = this.$.restFormForAuthcodeToken;
 
           //form 1
-          this.$.restForm.addEventListener('submit', function() {
+          restForm.addEventListener('submit', function() {
             self.updateRedirectUrl();
             restForm.uaaUrlInput.disabled=true;
             restForm.submit();
@@ -143,13 +143,14 @@
         },
 
         updateRedirectUrl: function() {
-          var state = "?clientId=" + this.$.restForm.client_id.value + "&uaaUrl=" + this.$.restForm.uaaUrlInput.value ;
+          var restForm = this.$$('.restForm');
+          var state = "?clientId=" + restForm.client_id.value + "&uaaUrl=" + restForm.uaaUrlInput.value ;
           var unencodedRedirectUrl = window.location.protocol + "//" + window.location.host + "/" + state + "/" + window.location.hash;
           this.redirectUrl = unencodedRedirectUrl;
           this.encodedRedirectUrl = encodeURIComponent(unencodedRedirectUrl);
           this.state = state;
 
-          this.authcodeUrl = this.$.restForm.uaaUrlInput.value + '/oauth/authorize';
+          this.authcodeUrl = restForm.uaaUrlInput.value + '/oauth/authorize';
         },
 
         behaviors: [RestFormBehavior]

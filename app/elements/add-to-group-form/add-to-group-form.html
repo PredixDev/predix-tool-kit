@@ -15,7 +15,7 @@
         <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
       </paper-button>
     </p>
-    <form is="iron-form" id="restForm" method="post">
+    <form is="iron-form" class="restForm" method="post">
       <p>
         UAA URL: <span>{{baseUrl}}</span><!--<span>{{groupQuery}}</span> -->
       </p>
@@ -23,8 +23,6 @@
         <tr><td>Group name:</td><td style="width: 75%"><input required style="width: 100%" value="{{groupName::input}}"></td></tr>
         <tr><td>User name:</td><td><input required value="{{userName::input}}"></td></tr>
       </table>
-      <!-- <p>Request</p>
-      <textarea id="clientRequest" rows=10 cols=100>{{restRequest}}</textarea> -->
       <p>The 'get user' and 'add to group' cURL commands will be populated after you click 'Submit'.</p>
       <paper-button raised noink class="starter-button" id="getGroupCommandButton" data-dialog="getGroupCommand">See 'get group' cURL command</paper-button>
       <paper-button raised noink class="starter-button" id="getUserCommandButton" data-dialog="getUserCommand">See 'get user' cURL command</paper-button>
@@ -98,7 +96,7 @@
           // this.restRequest = JSON.stringify(this.restRequestObject);
           var userQueryEl = this.$.userQueryEl;
           var updateRequestEl = this.$.updateRequestEl;
-          var restForm = this.$.restForm;
+          var restForm = this.$$('.restForm');
           restForm.addEventListener('iron-form-presubmit', function() {
             this.request.method = 'get';
             this.request.url = self.groupQuery; //Groups?filter=displayName+eq+%22security-starter-sample%22&startIndex=1
@@ -107,7 +105,6 @@
               "authorization": self.adminAuthBearerToken || ""
             };
             self._reset();
-            // this.request.body = self.$.clientRequest.value; //textarea input
           });
           restForm.addEventListener('iron-form-response', function(event) {
             self.groupId = event.detail.response.resources[0].id;

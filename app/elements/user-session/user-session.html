@@ -1,0 +1,36 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="user-session">
+  <template>
+    <iron-ajax id="userSessionEl" url="/session" handle-as="json" auto method="GET"></iron-ajax>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'user-session',
+        properties: {
+          uaaUrl: {
+            type: String,
+            notify: true
+          }
+        },
+        ready: function() {
+          var userSessionEl = this.$.userSessionEl;
+          userSessionEl.addEventListener('response', function(event) {
+            var res = event.detail.response;
+            if (res.uaaUrl) {
+              this.uaaUrl = 'https://' + res.uaaUrl;
+            }
+          }.bind(this));
+          userSessionEl.addEventListener('error', function(event) {
+            console.error(event.detail.error);
+          });
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
