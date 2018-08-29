@@ -8,7 +8,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource"
   },
   {
@@ -20,7 +20,7 @@
             "val":"application/json"
          }
       ],
-      "method":"put",
+      "method":"PUT",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource/{resourceIdentifier}",
       "body" :{
         "resourceIdentifier": "{resourceIdentifier}",
@@ -43,7 +43,7 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource",
       "body": [
         {
@@ -78,7 +78,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource/{resourceIdentifier}"
   },
   {
@@ -90,7 +90,7 @@
             "val":"application/json"
          }
       ],
-      "method":"delete",
+      "method":"DELETE",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/resource/{resourceIdentifier}"
   },
   {
@@ -102,7 +102,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject"
   },
   {
@@ -114,7 +114,7 @@
             "val":"application/json"
          }
       ],
-      "method":"put",
+      "method":"PUT",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject/{subjectIdentifier}",
       "body": {
         "subjectIdentifier": "{subjectIdentifier}",
@@ -137,7 +137,7 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject",
       "body": [
         {
@@ -174,7 +174,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject/{subjectIdentifier}"
   },
   {
@@ -186,7 +186,7 @@
             "val":"application/json"
          }
       ],
-      "method":"delete",
+      "method":"DELETE",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/subject/{subjectIdentifier}"
   },
   {
@@ -198,7 +198,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/policy-set"
   },
   {
@@ -210,7 +210,7 @@
             "val":"application/json"
          }
       ],
-      "method":"put",
+      "method":"PUT",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/policy-set/{name}",
       "body":{
         "name": "{name}",
@@ -272,7 +272,7 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-acs.run.aws-usw02-pr.ice.predix.io/v1/policy-evaluation",
       "body": {
           "action": "GET",

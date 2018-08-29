@@ -8,7 +8,7 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/taxonomy",
       "body":{
 	"node_name": "Analytics",
@@ -41,7 +41,7 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics",
       "body":{
 
@@ -63,7 +63,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>"
   },
   {
@@ -75,7 +75,7 @@
         "val":"multipart/form-data"
       }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/artifacts",
       "body": {
         "formFields":
@@ -110,7 +110,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/artifacts"
   },
   {
@@ -122,7 +122,7 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/validation",
       "body":{
         "number1":700,
@@ -138,7 +138,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/validation/<request id goes here>"
 
   },
@@ -151,7 +151,7 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/deployment",
       "body":{
         "memory":512,
@@ -168,7 +168,7 @@
             "val":"application/json"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/deployment/<deployment id goes here>"
   },
   {
@@ -180,7 +180,7 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/execution",
       "body":{
         "number1":2,
@@ -196,7 +196,7 @@
             "val":"text/plain"
          }
       ],
-      "method":"get",
+      "method":"GET",
       "path":"https://predix-analytics-catalog-release.run.aws-usw02-pr.ice.predix.io/api/v1/catalog/analytics/<analyticCatalogEntryId-goes-here>/logs"
   },
     {
@@ -208,18 +208,18 @@
             "val":"application/json"
          }
       ],
-      "method":"post",
+      "method":"POST",
       "path":"https://predix-analytics-execution-release.run.aws-usw02-pr.ice.predix.io/api/v1/execution",
       "body":{
 	"id": "sid-33430087-7a44-4be3-8517-914faf923288",
 	"name": "Demo SimpleMath Orchestration",
 	"bpmnXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <definitions xmlns=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" expressionLanguage=\"http://www.w3.org/1999/XPath\" id=\"sid-81430087-7a44-4be3-8517-914faf923256\" targetNamespace=\"DSP-PM\" typeLanguage=\"http://www.w3.org/2001/XMLSchema\" xsi:schemaLocation=\"http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd\" xmlns:activiti=\"http://activiti.org/bpmn\"> <process id=\"DemoAdderWorklow\" isExecutable=\"true\"> <startEvent id=\"sid-start\" name=\"\"> <outgoing>sid-flow1</outgoing> </startEvent> <serviceTask completionQuantity=\"1\" id=\"sid-10001\" isForCompensation=\"false\" name=\"7f5dd8d5-54c3-4d81-af9e-155319b4557c::My analytic::v1\" startQuantity=\"1\" activiti:delegateExpression=\"${javaDelegate}\" xmlns:activiti=\"http://activiti.org/bpmn\"> <incoming>sid-flow1</incoming> <outgoing>sid-flow2</outgoing> </serviceTask> <serviceTask completionQuantity=\"1\" id=\"sid-10002\" isForCompensation=\"false\" name=\"7f5dd8d5-54c3-4d81-af9e-155319b4557c::My analytic::v1\" startQuantity=\"1\" activiti:delegateExpression=\"${javaDelegate}\" xmlns:activiti=\"http://activiti.org/bpmn\"> <incoming>sid-flow2</incoming> <outgoing>sid-flow3</outgoing> </serviceTask> <endEvent id=\"sid-end\" name=\"\"> <incoming>sid-flow3</incoming> </endEvent> <sequenceFlow id=\"sid-flow1\" name=\"\" sourceRef=\"sid-start\" targetRef=\"sid-10001\"/> <sequenceFlow id=\"sid-flow2\" name=\"\" sourceRef=\"sid-10001\" targetRef=\"sid-10002\"/> <sequenceFlow id=\"sid-flow3\" name=\"\" sourceRef=\"sid-10002\" targetRef=\"sid-end\"/> </process> </definitions>",
-	"analyticInputData": 
+	"analyticInputData":
 	[
 	{
 		"analyticStepId": "sid-10001",
 		"data": "{ \"number1\": 21, \"number2\": 4 }"
-	}, 
+	},
 	{
 		"analyticStepId": "sid-10002",
 		"data": "{ \"number1\": 25, \"number2\": 4 }"

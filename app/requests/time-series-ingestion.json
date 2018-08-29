@@ -7,7 +7,7 @@
             "val":"application/json"
          }
       ],
-      "method":"websocket",
+      "method":"WEBSOCKET",
       "path":"wss://gateway-predix-data-services.run.aws-usw02-pr.ice.predix.io/v1/stream/messages",
       "body":{
          "messageId":"1453338376222",

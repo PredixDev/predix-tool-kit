@@ -1,25 +1,25 @@
 [
   {
       "label":"GET REQUEST",
-      "method":"get",
+      "method":"GET",
       "path":"",
       "body":{}
   },
   {
       "label":"POST REQUEST",
-      "method":"post",
+      "method":"POST",
       "path":"",
       "body":{}
   },
   {
     "label":"PUT REQUEST",
-      "method":"put",
+      "method":"PUT",
       "path":"",
       "body":{}
   },
   {
     "label":"DELETE REQUEST",
-      "method":"delete",
+      "method":"DELETE",
       "path":""
   }
 ]

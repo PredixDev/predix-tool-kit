@@ -1,246 +1,358 @@
 [
-{
-	"label": "Get Field Data - Asset",
-	"headers": [{
-		"key": "content-type",
-		"val": "application/json"
-	}],
-	"method": "post",
-	"path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/getfielddata",
-	"body": {
-	"fieldDataCriteria": [{
-		"namespaces": [],
-		"fieldSelection": [{
-			"fieldIdentifier": {
-				"complexType": "FieldIdentifier",
-				"id": "/asset/assetTag/crank-frame-velocity/hiAlarmThreshold",
-				"source": "PREDIX_ASSET"
-			},
-			"expectedDataType": "DAString"
-		}],
-		"filter": {
-			"complexType": "AssetFilter",
-			"uri": "/asset/compressor-2017"
-		}
-	}]
-} 
-},
-{
-	"label": "Get Field Data - Timeseries",
-	"headers": [{
-		"key": "content-type",
-		"val": "application/json"
-	}],
-	"method": "post",
-	"path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/getfielddata",
-	"body": {
-	"fieldDataCriteria": [{
-		"namespaces": [],
-		"fieldSelection": [{
-			"fieldIdentifier": {
-				"complexType": "FieldIdentifier",
-				"id": "/asset/assetTag/crank-frame-dischargepressure",
-				"source": "PREDIX_TIMESERIES"
-			},
-			"expectedDataType": "DatapointsResponse"
-		}],
-		"filter": {
-			"complexType": "TimeseriesFilter",
-			"datapointsQuery": {
-				"start": "1d-ago",
-				"tags": [{
-					"name": "Compressor-2017:DischargePressure",
-					"limit": 0,
-					"aggregations": [],
-					"groups": []
-				}]
-			}
-		}
-	}]
-	}
-},
-{
-	"label": "Put Field Data - Timeseries",
-	"headers": [{
-		"key": "content-type",
-		"val": "application/json"
-	}],
-	"method": "post",
-	"path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/putfielddata",
-	"body": {
-			"correlationId": "correlationId",
-	"putFieldDataCriteria": [{
-		"namespaces": [],
-		"fieldData": {
-			"field": [],
-			"data": {
-				"complexType": "DatapointsIngestion",
-				"messageId": "1505426896439",
-				"body": [{
-					"name": "RMD_metric2",
-					"datapoints": [
-						[1505426896441, 10, 3],
-						[1505426896441, 10, 1]
-					],
-					"attributes": {
-						"host": "server1",
-						"customer": "Acme"
-					}
-				}]
-			}
-		}
-	}]
-       }
-},
-{
-	"label": "Put Field Data - Asset",
-	"headers": [{
-		"key": "content-type",
-		"val": "application/json"
-	}],
-	"method": "post",
-	"path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/putfielddata",
-	"body": {
-	"putFieldDataCriteria": [{
-		"namespaces": [],
-		"fieldData": {
-			"field": [{
-				"fieldIdentifier": {
-					"complexType": "FieldIdentifier",
-					"id": "/asset/assetTag/crank-frame-velocity/hiAlarmThreshold",
-					"source": "PREDIX_ASSET"
-				},
-				"parents": []
-			}],
-			"data": {
-				"complexType": "OsaData",
-				"dataEvent": {
-					"complexType": "DMReal",
-					"id": 0,
-					"numAlerts": [],
-					"value": 20.77
-				}
-			}
-		},
-		"filter": {
-			"complexType": "AssetFilter",
-			"uri": "/asset/compressor-2017"
-		}
-	}]
-       }
-},
-{
-	"label": "Post message into RabbitMQ",
-	"headers": [{
-		"key": "content-type",
-		"val": "application/json"
-	}],
-	"method": "post",
-	"path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/putfielddata",
-	"body": {
-		"putFieldDataCriteria": [{
-			"namespaces": [],
-			"fieldData": {
-				"field": [{
-					"fieldIdentifier": {
-						"complexType": "FieldIdentifier",
-						"source": "RABBITMQ_QUEUE"
-					},
-					"parents": []
-				}],
-				"data": {
-					"complexType": "PredixString",
-					"string": "{\n\t\"fieldChangedList\": {\n\t\t\"fieldChanged\": [{\n\t\t\t\"assetList\": {\n\t\t\t\t\"asset\": [{\n\t\t\t\t\t\"uri\": \"/asset/compressor-2017\",\n\t\t\t\t\t\"assetType\": \"asset\",\n\t\t\t\t\t\"fieldList\": {\n\t\t\t\t\t\t\"field\": [{\n\t\t\t\t\t\t\t\"fieldKey\": \"/asset/assetTag/crank-frame-dischargepressure\",\n\t\t\t\t\t\t\t\"fieldValue\": \"\",\n\t\t\t\t\t\t\t\"fieldType\": \"assetTag\",\n\t\t\t\t\t\t\t\"timeChanged\": \"2017-07-11T07:16:13.000Z\"\n\t\t\t\t\t\t}]\n\t\t\t\t\t}\n\t\t\t\t}]\n\t\t\t},\n\t\t\t\"externalAttributeMap\": {\n\t\t\t\t\"entry\": [{\n\t\t\t\t\t\"key\": \"\",\n\t\t\t\t\t\"value\": \"\"\n\t\t\t\t}]\n\t\t\t}\n\t\t}]\n\t}\n}"
-				}
-			}
-		}]
-	}
-},
-{
-	"label": "Update Asset and Post message into RabbitMQ",
-	"headers": [{
-		"key": "content-type",
-		"val": "application/json"
-	}],
-	"method": "post",
-	"path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/putfielddata",
-	"body": {
-		  "putFieldDataCriteria": [
-    {
-      "namespaces": [],
-      "fieldData": {
-        "field": [
-          {
-            "fieldIdentifier": {
-              "complexType": "FieldIdentifier",
-              "id": "/asset/assetTag/crank-frame-velocity/hiAlarmThreshold",
-              "source": "PREDIX_ASSET"
-            },
-            "parents": []
-          }
-        ],
-        "data": {
-          "complexType": "OsaData",
-          "dataEvent": {
-            "complexType": "DMReal",
-            "id": 0,
-            "numAlerts": [],
-            "value": 79.72
+  {
+    "label": "Get Field Data - Asset",
+    "headers": [
+      {
+        "key": "content-type",
+        "val": "application/json"
+      }
+    ],
+    "method": "POST",
+    "path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/getfielddata",
+    "body": {
+      "fieldDataCriteria": [
+        {
+          "namespaces": [],
+          "fieldSelection": [
+            {
+              "fieldIdentifier": {
+                "complexType": "FieldIdentifier",
+                "id": "/asset/assetTag/crank-frame-velocity/hiAlarmThreshold",
+                "source": "PREDIX_ASSET"
+              },
+              "expectedDataType": "DAString"
+            }
+          ],
+          "filter": {
+            "complexType": "AssetFilter",
+            "uri": "/asset/compressor-2017"
           }
         }
-      },
-      "filter": {
-        "complexType": "AssetFilter",
-        "uri": "/asset/compressor-2017"
-      }
-    },
-    {
-      "namespaces": [],
-      "fieldData": {
-        "field": [
-          {
-            "fieldIdentifier": {
-              "complexType": "FieldIdentifier",
-              "id": "/asset/assetTag/crank-frame-velocity/loAlarmThreshold",
-              "source": "PREDIX_ASSET"
-            },
-            "parents": []
-          }
-        ],
-        "data": {
-          "complexType": "OsaData",
-          "dataEvent": {
-            "complexType": "DMReal",
-            "id": 0,
-            "numAlerts": [],
-            "value": 8.17
-          }
-        }
-      },
-      "filter": {
-        "complexType": "AssetFilter",
-        "uri": "/asset/compressor-2017"
-      }
-    },
-    {
-      "namespaces": [],
-      "fieldData": {
-        "field": [
-          {
-            "fieldIdentifier": {
-              "complexType": "FieldIdentifier",
-              "source": "RABBITMQ_QUEUE"
-            },
-            "parents": []
-          }
-        ],
-        "data": {
-          "complexType": "PredixString",
-          "string": "{\n\t\"fieldChangedList\": {\n\t\t\"fieldChanged\": [{\n\t\t\t\"assetList\": {\n\t\t\t\t\"asset\": [{\n\t\t\t\t\t\"uri\": \"/asset/compressor-2017\",\n\t\t\t\t\t\"assetType\": \"asset\",\n\t\t\t\t\t\"fieldList\": {\n\t\t\t\t\t\t\"field\": [{\n\t\t\t\t\t\t\t\"fieldKey\": \"/asset/assetTag/crank-frame-velocity\",\n\t\t\t\t\t\t\t\"fieldValue\": \"\",\n\t\t\t\t\t\t\t\"fieldType\": \"assetTag\",\n\t\t\t\t\t\t\t\"timeChanged\": \"2017-07-11T07:16:13.000Z\"\n\t\t\t\t\t\t}]\n\t\t\t\t\t}\n\t\t\t\t}]\n\t\t\t},\n\t\t\t\"externalAttributeMap\": {\n\t\t\t\t\"entry\": [{\n\t\t\t\t\t\"key\": \"\",\n\t\t\t\t\t\"value\": \"\"\n\t\t\t\t}]\n\t\t\t}\n\t\t}]\n\t}\n}"
-        }
-      }
+      ]
     }
-  ]
-	}
-}
+  },
+  {
+    "label": "Get Field Data - Timeseries",
+    "headers": [
+      {
+        "key": "content-type",
+        "val": "application/json"
+      }
+    ],
+    "method": "POST",
+    "path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/getfielddata",
+    "body": {
+      "fieldDataCriteria": [
+        {
+          "namespaces": [],
+          "fieldSelection": [
+            {
+              "fieldIdentifier": {
+                "complexType": "FieldIdentifier",
+                "id": "/asset/assetTag/crank-frame-dischargepressure",
+                "source": "PREDIX_TIMESERIES"
+              },
+              "expectedDataType": "DatapointsResponse"
+            }
+          ],
+          "filter": {
+            "complexType": "TimeseriesFilter",
+            "datapointsQuery": {
+              "start": "1d-ago",
+              "tags": [
+                {
+                  "name": "Compressor-2017:DischargePressure",
+                  "limit": 0,
+                  "aggregations": [],
+                  "groups": []
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "label": "Put Field Data - Timeseries",
+    "headers": [
+      {
+        "key": "content-type",
+        "val": "application/json"
+      }
+    ],
+    "method": "POST",
+    "path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/putfielddata",
+    "body": {
+      "correlationId": "correlationId",
+      "putFieldDataCriteria": [
+        {
+          "namespaces": [],
+          "fieldData": {
+            "field": [],
+            "data": {
+              "complexType": "DatapointsIngestion",
+              "messageId": "1505426896439",
+              "body": [
+                {
+                  "name": "RMD_metric2",
+                  "datapoints": [
+                    [
+                      1505426896441,
+                      10,
+                      3
+                    ],
+                    [
+                      1505426896441,
+                      10,
+                      1
+                    ]
+                  ],
+                  "attributes": {
+                    "host": "server1",
+                    "customer": "Acme"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "label": "Put Field Data - Asset",
+    "headers": [
+      {
+        "key": "content-type",
+        "val": "application/json"
+      }
+    ],
+    "method": "POST",
+    "path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/putfielddata",
+    "body": {
+      "putFieldDataCriteria": [
+        {
+          "namespaces": [],
+          "fieldData": {
+            "field": [
+              {
+                "fieldIdentifier": {
+                  "complexType": "FieldIdentifier",
+                  "id": "/asset/assetTag/crank-frame-velocity/hiAlarmThreshold",
+                  "source": "PREDIX_ASSET"
+                },
+                "parents": []
+              }
+            ],
+            "data": {
+              "complexType": "OsaData",
+              "dataEvent": {
+                "complexType": "DMReal",
+                "id": 0,
+                "numAlerts": [],
+                "value": 20.77
+              }
+            }
+          },
+          "filter": {
+            "complexType": "AssetFilter",
+            "uri": "/asset/compressor-2017"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "label": "Post message into RabbitMQ",
+    "headers": [
+      {
+        "key": "content-type",
+        "val": "application/json"
+      }
+    ],
+    "method": "POST",
+    "path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/putfielddata",
+    "body": {
+      "putFieldDataCriteria": [
+        {
+          "namespaces": [],
+          "fieldData": {
+            "field": [
+              {
+                "fieldIdentifier": {
+                  "complexType": "FieldIdentifier",
+                  "source": "RABBITMQ_QUEUE"
+                },
+                "parents": []
+              }
+            ],
+            "data": {
+              "complexType": "DataMapList",
+              "map": [
+                {
+                  "fieldChangedList": {
+                    "fieldChanged": [
+                      {
+                        "assetList": {
+                          "asset": [
+                            {
+                              "uri": "/asset/compressor-2017",
+                              "assetType": "asset",
+                              "fieldList": {
+                                "field": [
+                                  {
+                                    "fieldKey": "/asset/assetTag/crank-frame-dischargepressure",
+                                    "fieldValue": "",
+                                    "fieldType": "assetTag",
+                                    "timeChanged": "2012-09-11T07:16:13.000Z"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "externalAttributeMap": {
+                          "entry": [
+                            {
+                              "key": "",
+                              "value": ""
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "label": "Update Asset and Post message into RabbitMQ",
+    "headers": [
+      {
+        "key": "content-type",
+        "val": "application/json"
+      }
+    ],
+    "method": "POST",
+    "path": "https://<dataexchange-host-port-here>/services/fdhrouter/fielddatahandler/putfielddata",
+    "body": {
+      "putFieldDataCriteria": [
+        {
+          "namespaces": [],
+          "fieldData": {
+            "field": [
+              {
+                "fieldIdentifier": {
+                  "complexType": "FieldIdentifier",
+                  "id": "/asset/assetTag/crank-frame-velocity/hiAlarmThreshold",
+                  "source": "PREDIX_ASSET"
+                },
+                "parents": []
+              }
+            ],
+            "data": {
+              "complexType": "OsaData",
+              "dataEvent": {
+                "complexType": "DMReal",
+                "id": 0,
+                "numAlerts": [],
+                "value": 79.72
+              }
+            }
+          },
+          "filter": {
+            "complexType": "AssetFilter",
+            "uri": "/asset/compressor-2017"
+          }
+        },
+        {
+          "namespaces": [],
+          "fieldData": {
+            "field": [
+              {
+                "fieldIdentifier": {
+                  "complexType": "FieldIdentifier",
+                  "id": "/asset/assetTag/crank-frame-velocity/loAlarmThreshold",
+                  "source": "PREDIX_ASSET"
+                },
+                "parents": []
+              }
+            ],
+            "data": {
+              "complexType": "OsaData",
+              "dataEvent": {
+                "complexType": "DMReal",
+                "id": 0,
+                "numAlerts": [],
+                "value": 8.17
+              }
+            }
+          },
+          "filter": {
+            "complexType": "AssetFilter",
+            "uri": "/asset/compressor-2017"
+          }
+        },
+        {
+          "namespaces": [],
+          "fieldData": {
+            "field": [
+              {
+                "fieldIdentifier": {
+                  "complexType": "FieldIdentifier",
+                  "source": "RABBITMQ_QUEUE"
+                },
+                "parents": []
+              }
+            ],
+            "data": {
+              "complexType": "DataMapList",
+              "map": [
+                {
+                  "fieldChangedList": {
+                    "fieldChanged": [
+                      {
+                        "assetList": {
+                          "asset": [
+                            {
+                              "uri": "/asset/compressor-2017",
+                              "assetType": "asset",
+                              "fieldList": {
+                                "field": [
+                                  {
+                                    "fieldKey": "/asset/assetTag/crank-frame-dischargepressure",
+                                    "fieldValue": "",
+                                    "fieldType": "assetTag",
+                                    "timeChanged": "2012-09-11T07:16:13.000Z"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "externalAttributeMap": {
+                          "entry": [
+                            {
+                              "key": "",
+                              "value": ""
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
 ]
