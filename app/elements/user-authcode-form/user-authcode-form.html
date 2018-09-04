@@ -10,7 +10,7 @@
     </style>
     <!-- <p class="paper-font-body2"></p> -->
     <!--form1 -->
-    <form class="restForm" action="{{authcodeUrl}}" method="get" >
+    <form class="restForm" action="{{authcodeUrl}}" method="GET" >
       <p>Authcode login, the most secure login type.
       <paper-button noink id="authcodeLoginDetailsButton" data-dialog="authcodeLoginDetails">
         <img title="Learn more." src="/images/Octicons-mortar-board.svg" class="starter-learn-img"></img>
@@ -38,7 +38,7 @@
 
     <!--form2 -->
     <br>
-    <form is="iron-form" id="restFormForAuthcodeToken" method="post" style="display:none">
+    <form is="iron-form" id="restFormForAuthcodeToken" method="POST" style="display:none">
       <hr>
       <p>Now enter the client id and secret and click submit to view the User token.</p>
       </p>

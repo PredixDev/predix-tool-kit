@@ -11,7 +11,7 @@
     </style>
     <iron-ajax id="requestLoaderEl" handle-as="json" last-response="{{requests}}" method="GET"></iron-ajax>
     <iron-ajax id="socketCloseEl" handle-as="json" last-response="{{restResponse}}" method="GET"></iron-ajax>
-    <form is="iron-form" class="restForm" method="post">
+    <form is="iron-form" class="restForm" method="POST">
       <p>
         UAA URL: <span>{{baseUrl}}</span>
       </p>
@@ -300,8 +300,8 @@
 
             this.request.url = self.getFormUrl();
             // if this is a websocket form, we first submit an http get to open a websocket to the backend.
-            if (self.httpMethod === 'websocket' || self.requestDefinition.method === 'websocket') {
-              this.request.method = 'get';
+            if (self.httpMethod.toLowerCase() === 'websocket' || self.requestDefinition.method.toLowerCase() === 'websocket') {
+              this.request.method = 'GET';
             } else {
               this.request.method = self.requestDefinition.method;
             }
