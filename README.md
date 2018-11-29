@@ -69,5 +69,4 @@ The app can run locally either inside the GE network, or outside the network.  I
 
 At this time, the web socket requests will not work when running locally.  You'll need to change one line of code from "wss" to "ws" in the api-form web component.
 
-[![Analytics](https://ga-beacon.appspot.com/UA-82773213-1/predix-tool-kit/readme?pixel)](https://github.com/PredixDev)
-
+[![Analytics](https://predix-beacon.appspot.com/UA-82773213-1/dataingestion-service/readme?pixel)](https://github.com/PredixDev)
